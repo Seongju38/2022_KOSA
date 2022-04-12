@@ -29,7 +29,7 @@ class DivCalc : public Calc {
 			return a / b;
 		else {
 			cout << "0으로 나눌 수 없어요옹ㅜ^ㅜ" << endl;
-			return 0; // Hmm...
+			return -1; // a,b가 음수이면?
 		}
 	}
 };
@@ -49,7 +49,8 @@ public:
 		cin.clear(); // 문자가 들어왔을 때, cin.fail()의 값 비우기
 		cin.ignore(); // 버퍼 안에 있는 내용 무시하기
 
-		cout << obj.calc(a, b) << endl;
+		if(obj.calc(a, b) != -1)
+			cout << obj.calc(a, b) << endl;
 	}
 
 };
