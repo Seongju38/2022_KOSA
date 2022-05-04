@@ -24,6 +24,7 @@
 IMPLEMENT_DYNCREATE(CstudyDrawDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CstudyDrawDoc, CDocument)
+
 	ON_COMMAND(IDM_COLOR_RED, &CstudyDrawDoc::OnColorRed)
 	ON_COMMAND(IDM_COLOR_GREEN, &CstudyDrawDoc::OnColorGreen)
 	ON_COMMAND(IDM_COLOR_BLUE, &CstudyDrawDoc::OnColorBlue)
@@ -51,6 +52,15 @@ BEGIN_MESSAGE_MAP(CstudyDrawDoc, CDocument)
 	ON_UPDATE_COMMAND_UI(IDM_SELECT_BMP_NIGHTSKY, &CstudyDrawDoc::OnUpdateSelectBmpNightsky)
 	ON_UPDATE_COMMAND_UI(IDM_MODE_PICTURE, &CstudyDrawDoc::OnUpdateModePicture)
 	ON_COMMAND(IDM_INFORMATION_STATUS, &CstudyDrawDoc::OnInformationStatus)
+
+
+	ON_COMMAND(IDM_RECTANGLE, &CstudyDrawDoc::OnModeShapeRec)
+	ON_COMMAND(IDM_CIRCLE, &CstudyDrawDoc::OnModeShapeCir)
+	//ON_COMMAND(IDM_RECTANGLE, &CstudyDrawDoc::OnShapestyleRectangle)
+	//ON_COMMAND(IDM_CIRCLE, &CstudyDrawDoc::OnShapestyleCIRCLE)
+	//ON_UPDATE_COMMAND_UI(IDM_RECTANGLE, &CstudyDrawDoc::OnUpdateOnShapestyleRectangle)
+	//ON_UPDATE_COMMAND_UI(IDM_CIRCLE, &CstudyDrawDoc::OnUpdateOnShapestyleCircle)
+
 END_MESSAGE_MAP()
 
 
@@ -73,10 +83,11 @@ BOOL CstudyDrawDoc::OnNewDocument()
 
 	// TODO: 여기에 재초기화 코드를 추가합니다.
 	uMouse_Mode = 0; 
-	d_line.line_Pen.lopnStyle = 0;
-	d_line.line_Pen.lopnColor = RGB(255, 0, 0);
-	d_line.line_Pen.lopnWidth.x = 1;
+	//d_line.line_Pen.lopnStyle = 0;
+	//d_line.line_Pen.lopnColor = RGB(255, 0, 0);
+	//d_line.line_Pen.lopnWidth.x = 1;
 	d_picture.fileName = (LPCWSTR)"";
+
 	return TRUE;
 }
 
@@ -85,7 +96,6 @@ BOOL CstudyDrawDoc::OnNewDocument()
 
 void CstudyDrawDoc::Serialize(CArchive& ar)
 {
-
 	if (ar.IsStoring())
 	{
 
@@ -167,24 +177,21 @@ void CstudyDrawDoc::Dump(CDumpContext& dc) const
 
 // CstudyDrawDoc 명령
 
-
+/*******색깔*******/
 void CstudyDrawDoc::OnColorRed()
 {
 	d_line.line_Pen.lopnColor = RGB(255, 0, 0);
 }
-
 
 void CstudyDrawDoc::OnColorGreen()
 {
 	d_line.line_Pen.lopnColor = RGB(0, 255, 0);
 }
 
-
 void CstudyDrawDoc::OnColorBlue()
 {
 	d_line.line_Pen.lopnColor = RGB(0, 0, 255);
 }
-
 
 void CstudyDrawDoc::OnUpdateColorRed(CCmdUI* pCmdUI)
 {
@@ -192,13 +199,11 @@ void CstudyDrawDoc::OnUpdateColorRed(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(d_line.line_Pen.lopnColor == RGB(255, 0, 0));
 }
 
-
 void CstudyDrawDoc::OnUpdateColorGreen(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(uMouse_Mode == 1);
 	pCmdUI->SetCheck(d_line.line_Pen.lopnColor == RGB(0, 255, 0));
 }
-
 
 void CstudyDrawDoc::OnUpdateColorBlue(CCmdUI* pCmdUI)
 {
@@ -206,24 +211,21 @@ void CstudyDrawDoc::OnUpdateColorBlue(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(d_line.line_Pen.lopnColor == RGB(0, 0, 255));
 }
 
-
+/*******굵기*******/
 void CstudyDrawDoc::OnLinesize1px()
 {
 	d_line.line_Pen.lopnWidth.x = 1;
 }
-
 
 void CstudyDrawDoc::OnLinesize3px()
 {
 	d_line.line_Pen.lopnWidth.x = 3;
 }
 
-
 void CstudyDrawDoc::OnLinesize5px()
 {
 	d_line.line_Pen.lopnWidth.x = 5;
 }
-
 
 void CstudyDrawDoc::OnUpdateLinesize1px(CCmdUI* pCmdUI)
 {
@@ -231,25 +233,24 @@ void CstudyDrawDoc::OnUpdateLinesize1px(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(d_line.line_Pen.lopnWidth.x == 1);
 }
 
-
 void CstudyDrawDoc::OnUpdateLinesize3px(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(uMouse_Mode == 1);
 	pCmdUI->SetCheck(d_line.line_Pen.lopnWidth.x == 3);
 }
 
-
 void CstudyDrawDoc::OnUpdateLinesize5px(CCmdUI* pCmdUI)
 {
-	pCmdUI->SetCheck(d_line.line_Pen.lopnWidth.x == 5);
 	pCmdUI->Enable(uMouse_Mode == 1);
+	pCmdUI->SetCheck(d_line.line_Pen.lopnWidth.x == 5);
 }
+
+/*******선 스타일*******/
 void CstudyDrawDoc::OnLinestylePssolid()
 {
 	d_line.line_Pen.lopnStyle = 0;
 	uMouse_Mode = 1;
 }
-
 
 void CstudyDrawDoc::OnLinestylePsdash()
 {
@@ -257,13 +258,11 @@ void CstudyDrawDoc::OnLinestylePsdash()
 	uMouse_Mode = 1;
 }
 
-
 void CstudyDrawDoc::OnUpdateLinestylePssolid(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(d_line.line_Pen.lopnStyle == 0);
 	pCmdUI->Enable(uMouse_Mode == 1);
 }
-
 
 void CstudyDrawDoc::OnUpdateLinestylePsdash(CCmdUI* pCmdUI)
 {
@@ -271,19 +270,48 @@ void CstudyDrawDoc::OnUpdateLinestylePsdash(CCmdUI* pCmdUI)
 	pCmdUI->Enable(uMouse_Mode==1);
 }
 
+/*******도형 스타일*******/
+//void CstudyDrawDoc::OnShapestyleRectangle()
+//{
+//	uMouse_Mode = 1;
+//}
+//
+//void CstudyDrawDoc::OnUpdateOnShapestyleRectangle(CCmdUI* pCmdUI)
+//{
+//	pCmdUI->Enable(uMouse_Mode == 1);
+//	pCmdUI->SetCheck();
+//}
+//
+//void CstudyDrawDoc::OnShapestyleCIRCLE()
+//{
+//	uMouse_Mode = 1;
+//}
+//
+//void CstudyDrawDoc::OnUpdateOnShapestyleCircle(CCmdUI* pCmdUI)
+//{
+//	pCmdUI->Enable(uMouse_Mode == 1);
+//}
+
 
 void CstudyDrawDoc::OnModeCursur()
 {
 	uMouse_Mode = 0;
-
 }
-
 
 void CstudyDrawDoc::OnModeDraw()
 {
 	uMouse_Mode = 1;
 }
 
+void CstudyDrawDoc::OnModeShapeRec()
+{
+	uMouse_Mode = 3;
+}
+
+void CstudyDrawDoc::OnModeShapeCir()
+{
+	uMouse_Mode = 4;
+}
 
 void CstudyDrawDoc::OnUpdateIndicatorColor(CCmdUI* pCmdUI)
 {
@@ -305,14 +333,20 @@ void CstudyDrawDoc::OnUpdateIndicatorColor(CCmdUI* pCmdUI)
 		case RGB(0, 0, 255):
 			pCmdUI->SetText(_T("파란색"));
 			break;
-
 		}
 	}
 	else if (uMouse_Mode == 2)
 	{
 		pCmdUI->SetText(_T("그림 삽입 모드"));
 	}
-	
+	else if (uMouse_Mode == 3)
+	{
+		pCmdUI->SetText(_T("사각형 삽입 모드"));
+	}
+	else if (uMouse_Mode == 4)
+	{
+		pCmdUI->SetText(_T("원 삽입 모드"));
+	}
 }
 
 
@@ -372,6 +406,7 @@ void CstudyDrawDoc::DeleteContents()
 {
 	d_lines.clear();
 	d_pictures.clear();
+	//d_shapes.clear();
 
 	CDocument::DeleteContents();
 }

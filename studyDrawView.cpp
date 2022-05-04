@@ -78,7 +78,14 @@ void CstudyDrawView::OnDraw(CDC* pDC)
 			line.drawAllLine(pDC);
 		}
 	}
-	
+
+	//if (pDoc->d_shapes.size())
+	//{
+	//	for (const DrawShape& shape : pDoc->d_shapes)
+	//	{
+	//		shape.drawShape(pDC);
+	//	}
+	//}
 }
 
 
@@ -132,6 +139,20 @@ void CstudyDrawView::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		pDoc->d_line.line_Array.clear();
 		pDoc->d_line.line_Array.push_back(point);
+
+		//pDoc->d_shape.m_array.clear();
+		//pDoc->d_shape.m_array.push_back(point);
+
+	}
+	else if (pDoc->uMouse_Mode == 3)
+	{
+		CClientDC dc(this);
+		dc.Rectangle(point.x, point.y, point.x + 100, point.y + 100);
+	}
+	else if (pDoc->uMouse_Mode == 4)
+	{
+		CClientDC dc(this);
+		dc.Ellipse(point.x, point.y, point.x + 100, point.y + 100);
 	}
 	else if (pDoc->uMouse_Mode == 2)
 	{
@@ -153,18 +174,31 @@ void CstudyDrawView::OnLButtonDown(UINT nFlags, CPoint point)
 			}
 		}
 	}
-	
+
+	/***새로 추가한 코드***/
+	//CClientDC dc(this);
+
+	//CPen pen(PS_SOLID, 10, RGB(255, 0, 0));
+	//CPen* pOldPen = dc.SelectObject(&pen);
+	//dc.Rectangle(point.x, point.y, point.x + 100, point.y + 100);
+	//dc.SelectObject(pOldPen);
+
+	////CstudyDrawDoc* pDoc = GetDocument();
+	//pDoc->d_shape.m_array.push_back(point);
+	/***********************/
+
 	SetCapture();
 	CView::OnLButtonDown(nFlags, point);
 }
-
-//의존성 역전 // 공통점 추상화 
+ 
 void CstudyDrawView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CstudyDrawDoc* pDoc = GetDocument();
 	if (pDoc->uMouse_Mode == 1)
 	{
 		pDoc->d_lines.push_back(pDoc->d_line);
+		
+		//pDoc->d_shapes.push_back(pDoc->d_shape);
 	}
 	else if (pDoc->uMouse_Mode == 2)
 	{
@@ -199,20 +233,16 @@ void CstudyDrawView::OnMouseMove(UINT nFlags, CPoint point)
 	CClientDC dc(this);
 	if ((nFlags & MK_LBUTTON) == MK_LBUTTON && pDoc->uMouse_Mode == 1)
 	{
-		
 		pDoc->d_line.DrawLastLine(&dc, point);
 		pDoc->d_line.push_back(point);
 	}
 	else if ((nFlags & MK_LBUTTON) == MK_LBUTTON && pDoc->uMouse_Mode == 0)
 	{
-//		for (DrawBmp& bmp : pDoc->d_pictures)
-//		{
 			if (m_pDrawBmp != NULL)
 			{
 				m_pDrawBmp->pos2 = point;
 				m_pDrawBmp->drawBmp(&dc);
 			}
-//		}
 	}
 
 	CMainFrame* pMainFrame = (CMainFrame*)AfxGetMainWnd();
@@ -220,8 +250,6 @@ void CstudyDrawView::OnMouseMove(UINT nFlags, CPoint point)
 
 	CView::OnMouseMove(nFlags, point);
 }
-
-
 
 
 void CstudyDrawView::OnModePicture()

@@ -2,15 +2,32 @@
 // studyDrawDoc.h: CstudyDrawDoc 클래스의 인터페이스
 //
 
-
 #pragma once
 #include <vector>
 using namespace std;
 
-//class DrawShape {
+//class DrawShape
+//{
 //public:
-//	virtual void draw(CDC* dc) const = 0;
+//	LOGPEN shape_Pen;
+//	vector<CPoint> m_array;
 //
+//	virtual void drawShape(CDC* pDC) const
+//	{
+//		CPen pen(shape_Pen.lopnStyle, shape_Pen.lopnWidth.x, shape_Pen.lopnColor);
+//		CPen* pOldPen = pDC->SelectObject(&pen);
+//
+//		for (const CPoint& pt : m_array) {
+//			pDC->Rectangle(pt.x, pt.y, pt.x + 100, pt.y + 100);
+//		}
+//
+//		pDC->SelectObject(pOldPen);
+//	}
+//
+//	void push_back(const CPoint& point)
+//	{
+//		m_array.push_back(point);
+//	}
 //};
 
 class DrawLine
@@ -87,12 +104,16 @@ protected: // serialization에서만 만들어집니다.
 public:
 	DrawLine d_line;
 	vector<DrawLine> d_lines;
+
 	DrawBmp d_picture;
 	vector<DrawBmp> d_pictures;
-	//DrawShape* m_pDrawShape;
-	//vector<DrawShape*> m_arrayShape;
+
+	//DrawShape d_shape;
+	//vector<DrawShape> d_shapes;
 
 	int uMouse_Mode;
+
+
 // 작업입니다.
 public:
 // 재정의입니다.
@@ -151,4 +172,11 @@ public:
 	virtual void DeleteContents();
 	afx_msg void OnUpdateModePicture(CCmdUI* pCmdUI);
 	afx_msg void OnInformationStatus();
+
+	afx_msg void OnModeShapeRec();
+	afx_msg void OnModeShapeCir();
+	//afx_msg void OnShapestyleRectangle();
+	//afx_msg void OnUpdateOnShapestyleRectangle(CCmdUI* pCmdUI);
+	//afx_msg void OnShapestyleCIRCLE();
+	//afx_msg void OnUpdateOnShapestyleCircle(CCmdUI* pCmdUI);
 };

@@ -53,13 +53,28 @@
 #define ID_INFORMATION_32827            32827
 #define ID_INFORMATION_STATUS           32828
 #define IDM_INFORMATION_STATUS          32829
+#define ID_BUTTON32830                  32830
+#define IDM_RECTANGLE                   32830
+#define ID_BUTTON32845                  32845
+#define IDM_CIRCLE                      32845
+#define ID_BUTTON32846                  32846
+#define ID_SHAPESTYLE_RECTANCLE         32847
+#define ID_SHAPESTYLE_CIRCLE            32848
+#define ID_SHAPECOLOR_32849             32849
+#define ID_SHAPECOLOR_32850             32850
+#define ID_SHAPECOLOR_32851             32851
+#define ID_SHAPECOLOR_RED               32852
+#define ID_SHAPECOLOR_GREEN             32853
+#define ID_SHAPECOLOR_BLUE              32854
+#define ID_BUTTON32857                  32857
+#define ID_BUTTON32858                  32858
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        314
-#define _APS_NEXT_COMMAND_VALUE         32830
+#define _APS_NEXT_COMMAND_VALUE         32859
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
