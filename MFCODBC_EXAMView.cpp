@@ -227,53 +227,39 @@ void CMFCODBCEXAMView::OnBnClickedButtonDelete()
 	CDatabase db;
 	BOOL bRet = db.OpenEx(_T("DSN=scott_db;uid=user1;PWD=passwd;"), 0);
 	if (bRet) {
-		CStringArray arr;
+		CString strInParam;
+		CArray<int, int> arr;
 
+		// 삭제 위치와 삭제 사원 번호만 얻는다.
 		for (int i = nCount - 1; i >= 0; --i) {
 			if (m_listView.GetCheck(i)) {
 				// 삭제 할 사원 번호를 얻는다.
-				strEmpNo = m_listView.GetItemText(i, 0); // 삭제하는 EmpNo를 얻음
+				strEmpNo = m_listView.GetItemText(i, 0);
 
-				// 삭제 할 사원을 SQL 구문을 생성한다.
-				//strSQL.Format(_T("DELETE FROM emp WHERE empno = %s"), strEmpNo);
-				// 삭제 SQL 구문을 실행한다.
-				//db.ExecuteSQL(strSQL); // ExecuteSQL ( ) : DML 구문(insert, delete, update, merge)을 바로 전달할 수 있음
-												 // 여러건을 삭제 할 때 그 여러 건만큼 실행됨 -> 성능저하
+				strInParam += strEmpNo + _T(",");
 
-				// 삭제할 사원번호를 배열에 추가한다.
-				arr.Add(strEmpNo);
-				
-				// 목록에서 제거한다.
-				m_listView.DeleteItem(i);
+				// 삭제할 사원번호의 위치를 배열에 추가한다.
+				arr.Add(i);
 			}
 		}
-		const int size = arr.GetSize();
-		if (size != 0) {
-			CString strInParam;
 
-			// 만약 DELETE FROM emp WHERE EMPNO IN ( 1, 2, 3 ) 되어있다면, 
-			//for (int i = 0; i < size; i++) {
-			//	if (i != 0) { // 인덱스 0번째 앞에는 , 가 없으니까
-			//		strInParam += _T(",");
-			//	}
-			//	strInParam += arr.GetAt(i);
-			//}
-			// 별로 좋은 코드는 아님 : 루프가 돌 때마다 if문을 사용하게 됨 -> 속도저하
+		try {
+			if (!strInParam.IsEmpty()) {
+				strInParam.Delete(strInParam.GetLength() - 1, 1);
+				strSQL.Format(_T("DELETE FROM emp WHERE EMPNO IN (%s)"), strInParam.GetBuffer());
+				db.ExecuteSQL(strSQL);
 
-			for (int i = 0; i < size; i++) {
-				strInParam += arr.GetAt(i) + _T(","); // 마지막에 , 가 무조건 들어가게 되어있음
+				// 화면에서 삭제 항목을 제거한다. - 예외가 발생되면 실행 안 함
+				for (int i = 0; i < arr.GetSize(); i++) {
+					// 목록에서 제거한다.
+					m_listView.DeleteItem(arr.GetAt(i));
+				}
 			}
-			strInParam.Delete(strInParam.GetLength() - 1, 1); // 인덱스 0번째 앞에 있는 , 를 삭제하겠음
-
-			// 만약 DELETE FROM emp WHERE EMPNO IN ( '1', '2', '3', '4', '5' ) 문자열로 되어있다면,
-			//for (int i = 0; i < size; i++) {
-			//	strInParam += _T("'") + arr.GetAt(i) + _T("',");
-			//}
-			//strInParam.Delete(strInParam.GetLength() - 1, 1);
-			// 이 패턴을 익히는 게 좋음 : if문을 사용하지 않아도 됨
-
-			strSQL.Format(_T("DELETE FROM emp WHERE EMPNO IN (%s)"), strInParam.GetBuffer());
-			db.ExecuteSQL(strSQL);
+		}
+		catch (CException* p) {
+			TCHAR szErr[100];
+			p->GetErrorMessage(szErr, sizeof(szErr));
+			AfxMessageBox(szErr);
 		}
 	}
 	else {
