@@ -54,6 +54,10 @@ public:
 	CImageList m_imageList;
 	CImageList m_imageListSmall;
 	afx_msg void OnBnClickedButtonDelete();
+	afx_msg void OnBnClickedButtonModify();
+
+	// DB 연결
+	CDatabase m_db;
 };
 
 #ifndef _DEBUG  // MFCODBC_EXAMView.cpp의 디버그 버전

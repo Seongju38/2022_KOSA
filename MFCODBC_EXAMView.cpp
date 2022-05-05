@@ -17,6 +17,68 @@
 #define new DEBUG_NEW
 #endif
 
+/*************************************************************코드추가*************************************************************/
+#include <memory> // 스마트 포인터 사용을 위함
+#include <vector>
+
+using namespace std;
+
+class CEmp {
+public:
+	CString strEmpNo;
+	CString strEName;
+	CString strJob;
+	CString strMgr;
+	CString strHireDate;
+	CString strSal;
+	CString strComm;
+	CString strDeptNo;
+};
+
+using CEmpPtr = shared_ptr<CEmp>;
+
+vector<CEmpPtr> GetListEmp(CDatabase& db)
+{
+	vector<CEmpPtr> resultList;
+
+	// 2. SQL 구문 실행
+	CRecordset  rs(&db);
+	rs.Open(CRecordset::forwardOnly,
+		_T("SELECT a.empno, a.ename, a.job, b.ename mgr_name, \
+				to_char(a.hiredate, 'YYYY-MM-DD'), to_char(a.sal, '99,999.0'), a.comm, c.dname \
+			FROM emp a, emp b, dept c \
+			WHERE a.mgr = b.empno(+) \
+			AND a.deptno = c.deptno(+)"));
+
+	// 3. SQL 구문 실행 결과 얻기
+	int nRow = 0;
+
+	// rs를 하나의 파일로 봄
+	while (!rs.IsEOF()) {
+		// 스마트 포인터를 이용하여 객체 생성함
+		CEmpPtr pEmp = make_shared<CEmp>( );
+		if (pEmp == nullptr) return vector<CEmpPtr>( ); // 포인터 사용 시 반드시 nullptr 확인
+
+		rs.GetFieldValue((short)0, pEmp->strEmpNo);
+		rs.GetFieldValue(1, pEmp->strEName);
+		rs.GetFieldValue(2, pEmp->strJob);
+		rs.GetFieldValue(3, pEmp->strMgr);
+		rs.GetFieldValue(4, pEmp->strHireDate);
+		rs.GetFieldValue(5, pEmp->strSal);
+		rs.GetFieldValue(6, pEmp->strComm);
+		rs.GetFieldValue(7, pEmp->strDeptNo);
+
+		rs.MoveNext();
+
+		// 배열에 스마트 포인터 객체를 추가한다.
+		resultList.push_back(pEmp);
+	}
+	rs.Close();
+
+	return resultList;
+}
+
+/************************************************************************************************************************************/
 
 // CMFCODBCEXAMView
 
@@ -28,6 +90,7 @@ BEGIN_MESSAGE_MAP(CMFCODBCEXAMView, CFormView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CFormView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CFormView::OnFilePrintPreview)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CMFCODBCEXAMView::OnBnClickedButtonDelete)
+	ON_BN_CLICKED(IDC_BUTTON_MODIFY, &CMFCODBCEXAMView::OnBnClickedButtonModify)
 END_MESSAGE_MAP()
 
 // CMFCODBCEXAMView 생성/소멸
@@ -35,12 +98,19 @@ END_MESSAGE_MAP()
 CMFCODBCEXAMView::CMFCODBCEXAMView() noexcept
 	: CFormView(IDD_MFCODBC_EXAM_FORM)
 {
-	// TODO: 여기에 생성 코드를 추가합니다.
-
+	/*************************************************************코드추가*************************************************************/
+	BOOL bRet = m_db.OpenEx(_T("DSN=scott_db;uid=user1;PWD=passwd;"), 0);
+	if (!bRet) {
+		AfxMessageBox(_T("DB 연결 실패"));
+	}
 }
 
 CMFCODBCEXAMView::~CMFCODBCEXAMView()
 {
+	if (m_db.IsOpen()) {
+		// DB 연결 종료
+		m_db.Close();
+	}
 }
 
 void CMFCODBCEXAMView::DoDataExchange(CDataExchange* pDX)
@@ -89,83 +159,23 @@ void CMFCODBCEXAMView::OnInitialUpdate()
 	DWORD dwExStyle = m_listView.GetExtendedStyle();
 	m_listView.SetExtendedStyle(dwExStyle | LVS_EX_CHECKBOXES | LVS_EX_BORDERSELECT | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
-	// 1. DB 연결
-	// 2. SQL 구문 실행 
-	// 3. SQL 구문 실행 결과 얻기
-	// 4. 연결 종료
 
-	// CDatabase 클래스 = DB 연결을 관리하는 클래스
-	// CRecordSet 클래스 = SQL 구문을 실행하고 결과 집합을 관리하는 클래스
+		// 사원 전체 목록을 얻는다.
+		vector<CEmpPtr> empList = GetListEmp(m_db);
 
-	// 1. DB 연결
-	CDatabase db;
-	BOOL bRet = db.OpenEx(_T("DSN=scott_db;uid=user1;PWD=passwd;"), 0);
-	if (bRet) {
-		//AfxMessageBox(_T("DB 연결 성공"));
-
-		// 2. SQL 구문 실행
-		CRecordset  rs(&db);
-		//rs.Open(CRecordset::forwardOnly, _T("SELECT * FROM emp"));
-		rs.Open(CRecordset::forwardOnly,
-			_T("SELECT a.empno, a.ename, a.job, b.ename mgr_name, \
-				to_char(a.hiredate, 'YYYY-MM-DD'), to_char(a.sal, '99,999.0'), a.comm, c.dname \
-			FROM emp a, emp b, dept c \
-			WHERE a.mgr = b.empno(+) \
-			AND a.deptno = c.deptno(+)"));
-
-		//rs.MoveFirst();
-		//rs.MoveNext();
-		//rs.MoveLast();
-		//rs.MovePrev();
-
-		// 3. SQL 구문 실행 결과 얻기
 		int nRow = 0;
 
-		CDBVariant empNo;
-		CString strEmpNo;
-		CString strEName;
-		CString strJob;
-		CString strMgr;
-		CString strHireDate;
-		CString strSal;
-		CString strComm;
-		CString strDeptNo;
-
-		// rs를 하나의 파일로 봄
-		while (!rs.IsEOF()) {
-			rs.GetFieldValue((short)0, empNo, SQL_C_SSHORT); // 숫자로 제어 가능
-			//rs.GetFieldValue((short)0, strEName); // 인덱스로 데이터를 읽겠음 - 0만 쓰면 안 돼 : 0을 null로 판단함
-			rs.GetFieldValue(1, strEName);
-			rs.GetFieldValue(2, strJob);
-			rs.GetFieldValue(3, strMgr);
-			rs.GetFieldValue(4, strHireDate);
-			rs.GetFieldValue(5, strSal);
-			rs.GetFieldValue(6, strComm);
-			rs.GetFieldValue(7, strDeptNo);
-
-			//strEmpNo.Format(_T("%d"), empNo.m_iVal + 1000);
-			strEmpNo.Format(_T("%d"), empNo.m_iVal);
-			m_listView.InsertItem(nRow, strEmpNo, 0); // 첫번째 데이터에 이미지가 들어가게 함
-			m_listView.SetItemText(nRow, 1, strEName);
-			m_listView.SetItemText(nRow, 2, strJob);
-			m_listView.SetItemText(nRow, 3, strMgr);
-			m_listView.SetItemText(nRow, 4, strHireDate);
-			m_listView.SetItemText(nRow, 5, strSal);
-			m_listView.SetItemText(nRow, 6, strComm);
-			m_listView.SetItemText(nRow, 7, strDeptNo);
-
-			//AfxMessageBox(strValue);
-	
-			rs.MoveNext();
-
+		for (const auto& pEmp : empList) {
+			m_listView.InsertItem(nRow, pEmp->strEmpNo, 0);
+			m_listView.SetItemText(nRow, 1, pEmp->strEName);
+			m_listView.SetItemText(nRow, 2, pEmp->strJob);
+			m_listView.SetItemText(nRow, 3, pEmp->strMgr);
+			m_listView.SetItemText(nRow, 4, pEmp->strHireDate);
+			m_listView.SetItemText(nRow, 5, pEmp->strSal);
+			m_listView.SetItemText(nRow, 6, pEmp->strComm);
+			m_listView.SetItemText(nRow, 7, pEmp->strDeptNo);
 		}
-		rs.Close();
 	}
-	else {
-		AfxMessageBox(_T("DB 연결 실패"));
-	}
-	// DB 연결 종료
-	db.Close();
 }
 
 
@@ -224,61 +234,76 @@ void CMFCODBCEXAMView::OnBnClickedButtonDelete()
 	CString strSQL;
 
 	// 화면 & DB에서 삭제
-	CDatabase db;
-	BOOL bRet = db.OpenEx(_T("DSN=scott_db;uid=user1;PWD=passwd;"), 0);
-	if (bRet) {
-		CString strInParam;
-		CArray<int, int> arr;
+	CString strInParam;
+	CArray<int, int> arr;
 
-		// 삭제 위치와 삭제 사원 번호만 얻는다.
-		for (int i = nCount - 1; i >= 0; --i) {
-			if (m_listView.GetCheck(i)) {
-				// 삭제 할 사원 번호를 얻는다.
-				strEmpNo = m_listView.GetItemText(i, 0);
+	// 삭제 위치와 삭제 사원 번호만 얻는다.
+	for (int i = nCount - 1; i >= 0; --i) {
+		if (m_listView.GetCheck(i)) {
+			// 삭제 할 사원 번호를 얻는다.
+			strEmpNo = m_listView.GetItemText(i, 0);
 
-				strInParam += strEmpNo + _T(",");
+			strInParam += strEmpNo + _T(",");
 
-				// 삭제할 사원번호의 위치를 배열에 추가한다.
-				arr.Add(i);
-			}
-		}
-
-		try {
-			if (!strInParam.IsEmpty()) {
-				// 뒤에 있는 (,)를 삭제한다.
-				strInParam.Delete(strInParam.GetLength() - 1, 1);
-
-				// SQL 삭제 구문을 생성한다.
-				//strSQL.Format(_T("DELETE FROM emp WHERE EMPNO IN (%s)"), strInParam.GetBuffer());
-				strSQL = _T("DELETE FROM emp WHERE EMPNO IN (") + strInParam + _T(")");
-
-				// 트랜젝션 시작 : 데이터베이스 작업이 시작 될 때 // DML
-				db.BeginTrans();
-
-				db.ExecuteSQL(strSQL); // DML 구문
-
-				// 트랜젝션 완료 // DML
-				db.CommitTrans();
-
-				// 화면에서 삭제 항목을 제거한다. - 예외가 발생되면 실행 안 함
-				for (int i = 0; i < arr.GetSize(); i++) {
-					// 목록에서 제거한다.
-					m_listView.DeleteItem(arr.GetAt(i));
-				}
-			}
-		}
-		catch (const CException* p) {
-			// 트랜젝션 복구 // DML
-			db.Rollback();
-
-			TCHAR szErr[100];
-			p->GetErrorMessage(szErr, sizeof(szErr));
-			AfxMessageBox(szErr);
+			// 삭제할 사원번호의 위치를 배열에 추가한다.
+			arr.Add(i);
 		}
 	}
-	else {
-		AfxMessageBox(_T("DB 연결 실패"));
+
+	try {
+		if (!strInParam.IsEmpty()) {
+			// 뒤에 있는 (,)를 삭제한다.
+			strInParam.Delete(strInParam.GetLength() - 1, 1);
+
+			// SQL 삭제 구문을 생성한다.
+			//strSQL.Format(_T("DELETE FROM emp WHERE EMPNO IN (%s)"), strInParam.GetBuffer());
+			strSQL = _T("DELETE FROM emp WHERE EMPNO IN (") + strInParam + _T(")");
+
+			// 트랜젝션 시작 : 데이터베이스 작업이 시작 될 때 // DML
+			m_db.BeginTrans();
+
+			m_db.ExecuteSQL(strSQL); // DML 구문
+
+			// 트랜젝션 완료 // DML
+			m_db.CommitTrans();
+
+			// 화면에서 삭제 항목을 제거한다. - 예외가 발생되면 실행 안 함
+			for (int i = 0; i < arr.GetSize(); i++) {
+				// 목록에서 제거한다.
+				m_listView.DeleteItem(arr.GetAt(i));
+			}
+		}
 	}
-	// DB 연결 종료
-	db.Close();
+	catch (const CException* p) {
+		// 트랜젝션 복구 // DML
+		m_db.Rollback();
+
+		TCHAR szErr[100];
+		p->GetErrorMessage(szErr, sizeof(szErr));
+		AfxMessageBox(szErr);
+	}
+}
+
+
+void CMFCODBCEXAMView::OnBnClickedButtonModify()
+{
+	const int nCount = m_listView.GetItemCount();
+	CString strEmpNo;
+
+	// 선택된 사원 번호를 얻는다.
+	for (int i = nCount - 1; i >= 0; --i) {
+		if (m_listView.GetCheck(i)) {
+			strEmpNo = m_listView.GetItemText(i, 0);
+			break;
+		}
+	}
+
+	// DB에서 사원번호에 대한 상세 정보를 얻는다
+	// 1. 직원 목록을 얻는다. (관리자 선택 시 사용)
+	// 2. 부서 목록을 얻는다. (부서 선택 시 사용)
+	// 3. 사원번호로 사원 상세 정보를 얻는다. 
+
+
+	// 사원 전체 목록을 얻는다.
+	vector<CEmpPtr> empList = GetListEmp(m_db);
 }
