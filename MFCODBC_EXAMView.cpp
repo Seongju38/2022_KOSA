@@ -28,30 +28,35 @@ public:
 	CString strEmpNo;
 	CString strEName;
 	CString strJob;
-	CString strMgr;
+	CString strMgr; // 매니저 사원번호
+	CString strMgrName; // 매니저 이름
 	CString strHireDate;
 	CString strSal;
 	CString strComm;
-	CString strDeptNo;
+	CString strDeptNo; // 부서번호
+	CString strDName; // 부서이름
 };
-
 using CEmpPtr = shared_ptr<CEmp>;
+
+class CDept {
+public:
+	CString strDeptNo;
+	CString strDName;
+	CString strLoc;
+};
+using CDeptPtr = shared_ptr<CDept>;
 
 vector<CEmpPtr> GetListEmp(CDatabase& db)
 {
 	vector<CEmpPtr> resultList;
 
-	// 2. SQL 구문 실행
 	CRecordset  rs(&db);
 	rs.Open(CRecordset::forwardOnly,
-		_T("SELECT a.empno, a.ename, a.job, b.ename mgr_name, \
-				to_char(a.hiredate, 'YYYY-MM-DD'), to_char(a.sal, '99,999.0'), a.comm, c.dname \
+		_T("SELECT a.empno, a.ename, a.job, a.mgr, b.ename mgr_name, \
+				to_char(a.hiredate, 'YYYY-MM-DD'), to_char(a.sal, '99,999'), a.comm, a.deptno, c.dname \
 			FROM emp a, emp b, dept c \
 			WHERE a.mgr = b.empno(+) \
 			AND a.deptno = c.deptno(+)"));
-
-	// 3. SQL 구문 실행 결과 얻기
-	int nRow = 0;
 
 	// rs를 하나의 파일로 봄
 	while (!rs.IsEOF()) {
@@ -63,15 +68,75 @@ vector<CEmpPtr> GetListEmp(CDatabase& db)
 		rs.GetFieldValue(1, pEmp->strEName);
 		rs.GetFieldValue(2, pEmp->strJob);
 		rs.GetFieldValue(3, pEmp->strMgr);
-		rs.GetFieldValue(4, pEmp->strHireDate);
-		rs.GetFieldValue(5, pEmp->strSal);
-		rs.GetFieldValue(6, pEmp->strComm);
-		rs.GetFieldValue(7, pEmp->strDeptNo);
+		rs.GetFieldValue(4, pEmp->strMgrName);
+		rs.GetFieldValue(5, pEmp->strHireDate);
+		rs.GetFieldValue(6, pEmp->strSal);
+		rs.GetFieldValue(7, pEmp->strComm);
+		rs.GetFieldValue(8, pEmp->strDeptNo);
+		rs.GetFieldValue(9, pEmp->strDName);
 
 		rs.MoveNext();
 
 		// 배열에 스마트 포인터 객체를 추가한다.
 		resultList.push_back(pEmp);
+	}
+	rs.Close();
+
+	return resultList;
+}
+
+CEmpPtr GetEmp(CDatabase& db, CString strEmpNo)
+{
+	CEmpPtr pEmp = make_shared<CEmp>( );
+
+	CRecordset  rs(&db);
+	rs.Open(CRecordset::forwardOnly,
+		_T("SELECT a.empno, a.ename, a.job, a.mgr, b.ename mgr_name, \
+				to_char(a.hiredate, 'YYYY-MM-DD'), to_char(a.sal, '99,999'), a.comm, a.deptno, c.dname \
+			FROM emp a, emp b, dept c \
+			WHERE a.mgr = b.empno(+) \
+			AND a.deptno = c.deptno(+) \
+			AND a.empno = ") + strEmpNo);
+
+	if (!rs.IsEOF()) {
+		rs.GetFieldValue((short)0, pEmp->strEmpNo);
+		rs.GetFieldValue(1, pEmp->strEName);
+		rs.GetFieldValue(2, pEmp->strJob);
+		rs.GetFieldValue(3, pEmp->strMgr);
+		rs.GetFieldValue(4, pEmp->strMgrName);
+		rs.GetFieldValue(5, pEmp->strHireDate);
+		rs.GetFieldValue(6, pEmp->strSal);
+		rs.GetFieldValue(7, pEmp->strComm);
+		rs.GetFieldValue(8, pEmp->strDeptNo);
+		rs.GetFieldValue(9, pEmp->strDName);
+	}
+	rs.Close();
+
+	return pEmp;
+}
+
+vector<CDeptPtr> GetListDept(CDatabase& db)
+{
+	vector<CDeptPtr> resultList;
+
+	// 2. SQL 구문 실행
+	CRecordset  rs(&db);
+	rs.Open(CRecordset::forwardOnly,
+		_T("SELECT * FROM dept"));
+
+	// rs를 하나의 파일로 봄
+	while (!rs.IsEOF()) {
+		CDeptPtr pDept = make_shared<CDept>();
+		if (pDept == nullptr) return vector<CDeptPtr>();
+
+		rs.GetFieldValue((short)0, pDept->strDeptNo);
+		rs.GetFieldValue(1, pDept->strDName);
+		rs.GetFieldValue(2, pDept->strLoc);
+
+		rs.MoveNext();
+
+		// 배열에 스마트 포인터 객체를 추가한다.
+		resultList.push_back(pDept);
 	}
 	rs.Close();
 
@@ -160,21 +225,20 @@ void CMFCODBCEXAMView::OnInitialUpdate()
 	m_listView.SetExtendedStyle(dwExStyle | LVS_EX_CHECKBOXES | LVS_EX_BORDERSELECT | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
 
-		// 사원 전체 목록을 얻는다.
-		vector<CEmpPtr> empList = GetListEmp(m_db);
+	// 사원 전체 목록을 얻는다.
+	vector<CEmpPtr> empList = GetListEmp(m_db);
 
-		int nRow = 0;
+	int nRow = 0;
 
-		for (const auto& pEmp : empList) {
-			m_listView.InsertItem(nRow, pEmp->strEmpNo, 0);
-			m_listView.SetItemText(nRow, 1, pEmp->strEName);
-			m_listView.SetItemText(nRow, 2, pEmp->strJob);
-			m_listView.SetItemText(nRow, 3, pEmp->strMgr);
-			m_listView.SetItemText(nRow, 4, pEmp->strHireDate);
-			m_listView.SetItemText(nRow, 5, pEmp->strSal);
-			m_listView.SetItemText(nRow, 6, pEmp->strComm);
-			m_listView.SetItemText(nRow, 7, pEmp->strDeptNo);
-		}
+	for (const auto& pEmp : empList) {
+		m_listView.InsertItem(nRow, pEmp->strEmpNo, 0);
+		m_listView.SetItemText(nRow, 1, pEmp->strEName);
+		m_listView.SetItemText(nRow, 2, pEmp->strJob);
+		m_listView.SetItemText(nRow, 3, pEmp->strMgr);
+		m_listView.SetItemText(nRow, 4, pEmp->strHireDate);
+		m_listView.SetItemText(nRow, 5, pEmp->strSal);
+		m_listView.SetItemText(nRow, 6, pEmp->strComm);
+		m_listView.SetItemText(nRow, 7, pEmp->strDeptNo);
 	}
 }
 
@@ -298,12 +362,22 @@ void CMFCODBCEXAMView::OnBnClickedButtonModify()
 		}
 	}
 
+	if (strEmpNo.IsEmpty()) {
+		AfxMessageBox(_T("사원을 선택 해 주세요"));
+		return;
+	}
+
 	// DB에서 사원번호에 대한 상세 정보를 얻는다
 	// 1. 직원 목록을 얻는다. (관리자 선택 시 사용)
 	// 2. 부서 목록을 얻는다. (부서 선택 시 사용)
 	// 3. 사원번호로 사원 상세 정보를 얻는다. 
 
 
-	// 사원 전체 목록을 얻는다.
+	// 1. 사원 전체 목록을 얻는다.
 	vector<CEmpPtr> empList = GetListEmp(m_db);
+	// 2. 부서 전체 목록을 얻는다.
+	vector<CDeptPtr> deptList = GetListDept(m_db);
+	// 3. 사원번호로 사원 상세 정보를 얻는다.
+	CEmpPtr pEmp = GetEmp(m_db, strEmpNo);
+
 }
