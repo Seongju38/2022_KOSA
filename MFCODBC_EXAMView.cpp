@@ -27,6 +27,7 @@ BEGIN_MESSAGE_MAP(CMFCODBCEXAMView, CFormView)
 	ON_COMMAND(ID_FILE_PRINT, &CFormView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CFormView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CFormView::OnFilePrintPreview)
+	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CMFCODBCEXAMView::OnBnClickedButtonDelete)
 END_MESSAGE_MAP()
 
 // CMFCODBCEXAMView 생성/소멸
@@ -84,26 +85,6 @@ void CMFCODBCEXAMView::OnInitialUpdate()
 	m_listView.InsertColumn(6, _T("상여금"), LVCFMT_LEFT, 100);
 	m_listView.InsertColumn(7, _T("부서"), LVCFMT_LEFT, 150);
 
-	////실제 자료 추가
-	//CString strItem;
-	//for (int i = 0; i < 5; i++) {
-	//	strItem.Format(_T("%dth Test Item"), i);
-	//	m_listView.InsertItem(i, strItem, i);
-	//}
-
-	//LVITEM item = { 0 };
-	//item.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_STATE;
-	//item.pszText = _T("TEST ITEM");
-	//item.iItem = 5;
-	//item.iImage = 1;
-	//item.state = LVIS_SELECTED | LVIS_FOCUSED;
-	//m_listView.InsertItem(&item);
-
-	////5행의 1열에 금액 추가함 
-	//m_listView.SetItemText(5, 1, _T("1000"));
-	////5행의 2열에 설명을 추가함 
-	//m_listView.SetItemText(5, 2, _T("5행의 2열에 설명을 추가함 "));
-
 	// 체크박스
 	DWORD dwExStyle = m_listView.GetExtendedStyle();
 	m_listView.SetExtendedStyle(dwExStyle | LVS_EX_CHECKBOXES | LVS_EX_BORDERSELECT | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
@@ -140,6 +121,7 @@ void CMFCODBCEXAMView::OnInitialUpdate()
 		// 3. SQL 구문 실행 결과 얻기
 		int nRow = 0;
 
+		CDBVariant empNo;
 		CString strEmpNo;
 		CString strEName;
 		CString strJob;
@@ -151,7 +133,8 @@ void CMFCODBCEXAMView::OnInitialUpdate()
 
 		// rs를 하나의 파일로 봄
 		while (!rs.IsEOF()) {
-			rs.GetFieldValue((short)0, strEmpNo); // 인덱스로 데이터를 읽겠음 - 0만 쓰면 안 돼 : 0을 null로 판단함
+			rs.GetFieldValue((short)0, empNo, SQL_C_SSHORT); // 숫자로 제어 가능
+			//rs.GetFieldValue((short)0, strEName); // 인덱스로 데이터를 읽겠음 - 0만 쓰면 안 돼 : 0을 null로 판단함
 			rs.GetFieldValue(1, strEName);
 			rs.GetFieldValue(2, strJob);
 			rs.GetFieldValue(3, strMgr);
@@ -160,6 +143,8 @@ void CMFCODBCEXAMView::OnInitialUpdate()
 			rs.GetFieldValue(6, strComm);
 			rs.GetFieldValue(7, strDeptNo);
 
+			//strEmpNo.Format(_T("%d"), empNo.m_iVal + 1000);
+			strEmpNo.Format(_T("%d"), empNo.m_iVal);
 			m_listView.InsertItem(nRow, strEmpNo, 0); // 첫번째 데이터에 이미지가 들어가게 함
 			m_listView.SetItemText(nRow, 1, strEName);
 			m_listView.SetItemText(nRow, 2, strJob);
@@ -173,14 +158,6 @@ void CMFCODBCEXAMView::OnInitialUpdate()
 	
 			rs.MoveNext();
 
-			/*
-			CString strItem;
-			for (int i = 0; i < rs.IsBOF(); i++) {
-					rs.GetFieldValue(i, strItem);
-					m_listView.InsertItem(i, strItem, 0);
-				rs.MoveNext();
-			}
-			*/
 		}
 		rs.Close();
 	}
@@ -238,3 +215,29 @@ CMFCODBCEXAMDoc* CMFCODBCEXAMView::GetDocument() const // 디버그되지 않은
 
 
 // CMFCODBCEXAMView 메시지 처리기
+
+/*************************************************************코드추가*************************************************************/
+void CMFCODBCEXAMView::OnBnClickedButtonDelete()
+{
+	// 화면에서 삭제
+	const int nCount = m_listView.GetItemCount();
+
+	for (int i = nCount - 1; i >= 0; --i) {
+		if (m_listView.GetCheck(i)) {
+			m_listView.DeleteItem(i);
+		}
+	}
+
+	// DB에서 삭제
+	//CDatabase db;
+	//BOOL bRet = db.OpenEx(_T("DSN=scott_db;uid=user1;PWD=passwd;"), 0);
+	//if (bRet) {
+	//	//AfxMessageBox(_T("DB 연결 성공"));
+	//	db.ExecuteSQL(_T("")); // ExecuteSQL ( ) : DML 구문(insert, delete, update, merge)을 바로 전달할 수 있음
+	//}
+	//else {
+	//	AfxMessageBox(_T("DB 연결 실패"));
+	//}
+	//// DB 연결 종료
+	//db.Close();
+}

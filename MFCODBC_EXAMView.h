@@ -53,6 +53,7 @@ public:
 	/*************************************************************코드추가*************************************************************/
 	CImageList m_imageList;
 	CImageList m_imageListSmall;
+	afx_msg void OnBnClickedButtonDelete();
 };
 
 #ifndef _DEBUG  // MFCODBC_EXAMView.cpp의 디버그 버전
