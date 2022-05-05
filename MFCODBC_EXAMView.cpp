@@ -245,8 +245,12 @@ void CMFCODBCEXAMView::OnBnClickedButtonDelete()
 
 		try {
 			if (!strInParam.IsEmpty()) {
+				// 뒤에 있는 (,)를 삭제한다.
 				strInParam.Delete(strInParam.GetLength() - 1, 1);
-				strSQL.Format(_T("DELETE FROM emp WHERE EMPNO IN (%s)"), strInParam.GetBuffer());
+
+				// SQL 삭제 구문을 생성한다.
+				//strSQL.Format(_T("DELETE FROM emp WHERE EMPNO IN (%s)"), strInParam.GetBuffer());
+				strSQL = _T("DELETE FROM emp WHERE EMPNO IN (") + strInParam + _T(")");
 
 				// 트랜젝션 시작 : 데이터베이스 작업이 시작 될 때 // DML
 				db.BeginTrans();
@@ -263,9 +267,10 @@ void CMFCODBCEXAMView::OnBnClickedButtonDelete()
 				}
 			}
 		}
-		catch (CException* p) {
+		catch (const CException* p) {
 			// 트랜젝션 복구 // DML
 			db.Rollback();
+
 			TCHAR szErr[100];
 			p->GetErrorMessage(szErr, sizeof(szErr));
 			AfxMessageBox(szErr);
