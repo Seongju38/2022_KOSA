@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CEmpDialog.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MFCODBC_EXAM.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CEmpDialog.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MFCODBC_EXAM.cpp" />
     <ClCompile Include="MFCODBC_EXAMDoc.cpp" />

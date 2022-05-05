@@ -18,6 +18,8 @@
 #endif
 
 /*************************************************************코드추가*************************************************************/
+#include "CEmpDialog.h"
+
 #include <memory> // 스마트 포인터 사용을 위함
 #include <vector>
 
@@ -379,5 +381,15 @@ void CMFCODBCEXAMView::OnBnClickedButtonModify()
 	vector<CDeptPtr> deptList = GetListDept(m_db);
 	// 3. 사원번호로 사원 상세 정보를 얻는다.
 	CEmpPtr pEmp = GetEmp(m_db, strEmpNo);
+
+
+
+	// 1. 대화상자에 사원 전체 목록, 부서 목록, 사원 상세 정보를 전달한다.
+	// 2. 대화상자를 출력한다.
+	CEmpDialog dlg;
+	if (dlg.DoModal() == IDOK) {
+
+	}
+
 
 }
