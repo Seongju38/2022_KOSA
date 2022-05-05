@@ -219,25 +219,34 @@ CMFCODBCEXAMDoc* CMFCODBCEXAMView::GetDocument() const // 디버그되지 않은
 /*************************************************************코드추가*************************************************************/
 void CMFCODBCEXAMView::OnBnClickedButtonDelete()
 {
-	// 화면에서 삭제
 	const int nCount = m_listView.GetItemCount();
+	CString strEmpNo; // 삭제하는 EmpNo를 얻기 위함
+	CString strSQL;
 
-	for (int i = nCount - 1; i >= 0; --i) {
-		if (m_listView.GetCheck(i)) {
-			m_listView.DeleteItem(i);
+	// 화면 & DB에서 삭제
+	CDatabase db;
+	BOOL bRet = db.OpenEx(_T("DSN=scott_db;uid=user1;PWD=passwd;"), 0);
+	if (bRet) {
+		//AfxMessageBox(_T("DB 연결 성공"));
+		for (int i = nCount - 1; i >= 0; --i) {
+			if (m_listView.GetCheck(i)) {
+				// 삭제 할 사원 번호를 얻는다.
+				strEmpNo = m_listView.GetItemText(i, 0); // 삭제하는 EmpNo를 얻음
+
+				// 삭제 할 사원을 SQL 구문을 생성한다.
+				strSQL.Format(_T("DELETE FROM emp WHERE empno = %s"), strEmpNo);
+
+				// 삭제 SQL 구문을 실행한다.
+				db.ExecuteSQL(strSQL); // ExecuteSQL ( ) : DML 구문(insert, delete, update, merge)을 바로 전달할 수 있음
+				
+				// 목록에서 제거한다.
+				m_listView.DeleteItem(i);
+			}
 		}
 	}
-
-	// DB에서 삭제
-	//CDatabase db;
-	//BOOL bRet = db.OpenEx(_T("DSN=scott_db;uid=user1;PWD=passwd;"), 0);
-	//if (bRet) {
-	//	//AfxMessageBox(_T("DB 연결 성공"));
-	//	db.ExecuteSQL(_T("")); // ExecuteSQL ( ) : DML 구문(insert, delete, update, merge)을 바로 전달할 수 있음
-	//}
-	//else {
-	//	AfxMessageBox(_T("DB 연결 실패"));
-	//}
-	//// DB 연결 종료
-	//db.Close();
+	else {
+		AfxMessageBox(_T("DB 연결 실패"));
+	}
+	// DB 연결 종료
+	db.Close();
 }
