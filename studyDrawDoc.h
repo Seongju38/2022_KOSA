@@ -6,36 +6,11 @@
 #include <vector>
 using namespace std;
 
-//class DrawShape
-//{
-//public:
-//	LOGPEN shape_Pen;
-//	vector<CPoint> m_array;
-//
-//	virtual void drawShape(CDC* pDC) const
-//	{
-//		CPen pen(shape_Pen.lopnStyle, shape_Pen.lopnWidth.x, shape_Pen.lopnColor);
-//		CPen* pOldPen = pDC->SelectObject(&pen);
-//
-//		for (const CPoint& pt : m_array) {
-//			pDC->Rectangle(pt.x, pt.y, pt.x + 100, pt.y + 100);
-//		}
-//
-//		pDC->SelectObject(pOldPen);
-//	}
-//
-//	void push_back(const CPoint& point)
-//	{
-//		m_array.push_back(point);
-//	}
-//};
-
 class DrawLine
 {
 public:
 	LOGPEN line_Pen;
 	vector<CPoint> line_Array;
-
 	virtual void drawAllLine(CDC* dc) const
 	{
 		dc->MoveTo(line_Array[0]);
@@ -108,10 +83,10 @@ public:
 	DrawBmp d_picture;
 	vector<DrawBmp> d_pictures;
 
-	//DrawShape d_shape;
-	//vector<DrawShape> d_shapes;
-
 	int uMouse_Mode;
+
+	LOGPEN Shape_Pen;
+	int Shape_Mode;
 
 
 // 작업입니다.
@@ -173,10 +148,10 @@ public:
 	afx_msg void OnUpdateModePicture(CCmdUI* pCmdUI);
 	afx_msg void OnInformationStatus();
 
-	afx_msg void OnModeShapeRec();
-	afx_msg void OnModeShapeCir();
-	//afx_msg void OnShapestyleRectangle();
-	//afx_msg void OnUpdateOnShapestyleRectangle(CCmdUI* pCmdUI);
-	//afx_msg void OnShapestyleCIRCLE();
-	//afx_msg void OnUpdateOnShapestyleCircle(CCmdUI* pCmdUI);
+	afx_msg void OnShapestyleRectangle();
+	afx_msg void OnUpdateOnShapestyleRectangle(CCmdUI* pCmdUI);
+	afx_msg void OnShapestyleCIRCLE();
+	afx_msg void OnUpdateOnShapestyleCircle(CCmdUI* pCmdUI);
 };
+
+
