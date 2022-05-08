@@ -30,6 +30,7 @@ BEGIN_MESSAGE_MAP(CHWHospitalView, CFormView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CFormView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CFormView::OnFilePrintPreview)
 	ON_WM_SIZE()
+	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CHWHospitalView::OnBnClickedButtonDelete)
 END_MESSAGE_MAP()
 
 // CHWHospitalView 생성/소멸
@@ -171,6 +172,7 @@ CHWHospitalDoc* CHWHospitalView::GetDocument() const // 디버그되지 않은 �
 // CHWHospitalView 메시지 처리기
 
 
+/******************************기타구현**********************************/
 void CHWHospitalView::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
@@ -194,5 +196,63 @@ void CHWHospitalView::OnSize(UINT nType, int cx, int cy)
 	}
 	if (m_listView.GetSafeHwnd()) {
 		m_listView.MoveWindow(0, 80, cx, cy - 80);
+	}
+}
+
+
+void CHWHospitalView::OnBnClickedButtonDelete()
+{
+	const int nCount = m_listView.GetItemCount();
+	CString strHospitalNo; // 삭제 할 HospitalNo 얻기
+	CString strSQL;
+
+	// 화면& DB에서 삭제
+	CString strInParam;
+	CArray<int, int> arr;
+
+	// 삭제 위치와 삭제 병원 번호 얻기
+	for (int i = nCount - 1; i >= 0; --i) {
+		if (m_listView.GetCheck(i)) {
+			// 삭제 할 병원 번호 얻기
+			strHospitalNo = m_listView.GetItemText(i, 0);
+
+			strInParam += strHospitalNo + _T(",");
+
+			// 삭제 할 병원 번호의 위치를 배열에 추가
+			arr.Add(i);
+		}
+	}
+
+	try {
+		if (strInParam.IsEmpty()) {
+			AfxMessageBox(_T("삭제 할 병원을 선택해 주세요"));
+			return;
+		}
+
+		if (!strInParam.IsEmpty()) {
+			// 맨 뒤에 있는 (,) 삭제
+			strInParam.Delete(strInParam.GetLength() - 1, 1);
+
+			AfxMessageBox(strInParam + _T("을 삭제하시겠습니까?"));
+
+			// SQL 삭제 구문 생성
+			strSQL = _T("DELETE FROM 병원 WHERE 번호 IN (") + strInParam + _T(")");
+
+			m_db.BeginTrans();
+			m_db.ExecuteSQL(strSQL);
+			m_db.CommitTrans();
+
+			// 화면에서 삭제 항목을 제거 - 예외가 발생되면 실행 안 함
+			for (int i = 0; i < arr.GetSize(); i++) {
+				m_listView.DeleteItem(arr.GetAt(i));
+			}
+		}
+	}
+	catch (const CException* p) {
+		m_db.Rollback();
+
+		TCHAR szErr[100];
+		p->GetErrorMessage(szErr, sizeof(szErr));
+		AfxMessageBox(szErr);
 	}
 }
