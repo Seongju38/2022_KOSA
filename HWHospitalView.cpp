@@ -13,6 +13,8 @@
 #include "HWHospitalDoc.h"
 #include "HWHospitalView.h"
 
+#include "CHospital.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -71,23 +73,53 @@ void CHWHospitalView::OnInitialUpdate()
 	ResizeParentToFit();
 
 	//컬럼 정보 출력 
-	m_listView.InsertColumn(0, _T("번호"), LVCFMT_LEFT, 40);
+	m_listView.InsertColumn(0, _T("번호"), LVCFMT_LEFT, 50);
 	m_listView.InsertColumn(1, _T("인허가일자"), LVCFMT_LEFT , 80);
 	m_listView.InsertColumn(2, _T("영업상태명"), LVCFMT_LEFT, 80);
 	m_listView.InsertColumn(3, _T("상세영업상태코드"), LVCFMT_LEFT, 120);
 	m_listView.InsertColumn(4, _T("상세영업상태명"), LVCFMT_LEFT, 120);
-	m_listView.InsertColumn(5, _T("소재지전화"), LVCFMT_LEFT, 80);
+	m_listView.InsertColumn(5, _T("소재지전화"), LVCFMT_LEFT, 120);
 	m_listView.InsertColumn(6, _T("소재지우편번호"), LVCFMT_LEFT, 120);
 	m_listView.InsertColumn(7, _T("소재지전체주소"), LVCFMT_LEFT, 200);
 	m_listView.InsertColumn(8, _T("도로명전체주소"), LVCFMT_LEFT, 200);
 	m_listView.InsertColumn(9, _T("도로명우편번호"), LVCFMT_LEFT, 120);
-	m_listView.InsertColumn(10, _T("사업장명"), LVCFMT_LEFT, 80);
-	m_listView.InsertColumn(11, _T("업태구분명"), LVCFMT_LEFT, 80);
+	m_listView.InsertColumn(10, _T("사업장명"), LVCFMT_LEFT, 200);
+	m_listView.InsertColumn(11, _T("업태구분명"), LVCFMT_LEFT, 120);
 	m_listView.InsertColumn(12, _T("의료기관종별명"), LVCFMT_LEFT, 120);
 	m_listView.InsertColumn(13, _T("의료인수"), LVCFMT_LEFT, 80);
 	m_listView.InsertColumn(14, _T("입원실수"), LVCFMT_LEFT, 80);
-	m_listView.InsertColumn(15, _T("병상수"), LVCFMT_LEFT, 70);
+	m_listView.InsertColumn(15, _T("병상수"), LVCFMT_LEFT, 80);
 	m_listView.InsertColumn(16, _T("진료과목내용명"), LVCFMT_LEFT, 250);
+
+	// 체크박스
+	DWORD dwExStyle = m_listView.GetExtendedStyle();
+	m_listView.SetExtendedStyle(dwExStyle | LVS_EX_CHECKBOXES | LVS_EX_BORDERSELECT | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+
+	// 병원 전체 데이터 읽기
+	CHospitalDAO hospitalDAO(m_db);
+	vector<CHospitalPtr> list = hospitalDAO.GetListHospital();
+	int nPos = 0;
+	for (const auto& pHospital : list) {
+		m_listView.InsertItem(nPos, pHospital->strHospitalNo.GetBuffer(), 0);
+		m_listView.SetItemText(nPos, 1, pHospital->strAuthDate.GetBuffer());
+		m_listView.SetItemText(nPos, 2, pHospital->strStatusName.GetBuffer());
+		m_listView.SetItemText(nPos, 3, pHospital->strStatusCode.GetBuffer());
+		m_listView.SetItemText(nPos, 4, pHospital->strDetaileStatusName.GetBuffer());
+		m_listView.SetItemText(nPos, 5, pHospital->strPhone.GetBuffer());
+		m_listView.SetItemText(nPos, 6, pHospital->strPostCode.GetBuffer());
+		m_listView.SetItemText(nPos, 7, pHospital->strAddress.GetBuffer());
+		m_listView.SetItemText(nPos, 8, pHospital->strRoadAddress.GetBuffer());
+		m_listView.SetItemText(nPos, 9, pHospital->strRoadPostCode.GetBuffer());
+		m_listView.SetItemText(nPos, 10, pHospital->strHospitalName.GetBuffer());
+		m_listView.SetItemText(nPos, 11, pHospital->strBusinessName.GetBuffer());
+		m_listView.SetItemText(nPos, 12, pHospital->strBusinessNickName.GetBuffer());
+		m_listView.SetItemText(nPos, 13, pHospital->strWorkerNum.GetBuffer());
+		m_listView.SetItemText(nPos, 14, pHospital->strRoomNum.GetBuffer());
+		m_listView.SetItemText(nPos, 15, pHospital->strBedNum.GetBuffer());
+		m_listView.SetItemText(nPos, 16, pHospital->strTreatmentSubject.GetBuffer());
+		nPos++;
+	}
+
 }
 
 

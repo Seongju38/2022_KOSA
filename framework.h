@@ -30,6 +30,10 @@
 
 /**********************코드추가**********************/
 #include <afxdb.h>
+#include <vector>
+#include <memory>
+
+using namespace std;
 
 
 
