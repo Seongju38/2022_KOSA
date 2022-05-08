@@ -54,12 +54,13 @@ BEGIN_MESSAGE_MAP(CstudyDrawDoc, CDocument)
 	ON_COMMAND(IDM_INFORMATION_STATUS, &CstudyDrawDoc::OnInformationStatus)
 
 
-	//ON_COMMAND(IDM_RECTANGLE, &CstudyDrawDoc::OnModeShapeRec)
-	//ON_COMMAND(IDM_CIRCLE, &CstudyDrawDoc::OnModeShapeCir)
 	ON_COMMAND(IDM_RECTANGLE, &CstudyDrawDoc::OnShapestyleRectangle)
 	ON_COMMAND(IDM_CIRCLE, &CstudyDrawDoc::OnShapestyleCIRCLE)
 	ON_UPDATE_COMMAND_UI(IDM_RECTANGLE, &CstudyDrawDoc::OnUpdateOnShapestyleRectangle)
 	ON_UPDATE_COMMAND_UI(IDM_CIRCLE, &CstudyDrawDoc::OnUpdateOnShapestyleCircle)
+
+	ON_COMMAND(IDM_REDRAW, &CstudyDrawDoc::OnReDraw)
+	ON_UPDATE_COMMAND_UI(IDM_REDRAW, &CstudyDrawDoc::OnUpdateOnReDraw)
 
 END_MESSAGE_MAP()
 
@@ -82,10 +83,7 @@ BOOL CstudyDrawDoc::OnNewDocument()
 		return FALSE;
 
 	// TODO: 여기에 재초기화 코드를 추가합니다.
-	//uMouse_Mode = 0; 
-	//d_line.line_Pen.lopnStyle = 0;
-	//d_line.line_Pen.lopnColor = RGB(255, 0, 0);
-	//d_line.line_Pen.lopnWidth.x = 1;
+
 	d_picture.fileName = (LPCWSTR)"";
 
 	return TRUE;
@@ -301,6 +299,19 @@ void CstudyDrawDoc::OnUpdateOnShapestyleCircle(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(uMouse_Mode == 1);
 	pCmdUI->SetCheck(Shape_Mode == 2);
+}
+
+/*******도형 찍고 다시 펜*******/
+void CstudyDrawDoc::OnReDraw()
+{
+	uMouse_Mode = 1;
+	Shape_Mode = 0;
+}
+
+void CstudyDrawDoc::OnUpdateOnReDraw(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(uMouse_Mode == 1);
+	pCmdUI->SetCheck(Shape_Mode == 0);
 }
 
 

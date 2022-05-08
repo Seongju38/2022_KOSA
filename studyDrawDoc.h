@@ -86,7 +86,7 @@ public:
 	int uMouse_Mode;
 
 	LOGPEN Shape_Pen;
-	int Shape_Mode;
+	int Shape_Mode = 0;
 
 
 // 작업입니다.
@@ -152,6 +152,9 @@ public:
 	afx_msg void OnUpdateOnShapestyleRectangle(CCmdUI* pCmdUI);
 	afx_msg void OnShapestyleCIRCLE();
 	afx_msg void OnUpdateOnShapestyleCircle(CCmdUI* pCmdUI);
+
+	afx_msg void OnReDraw();
+	afx_msg void OnUpdateOnReDraw(CCmdUI* pCmdUI);
 };
 
 

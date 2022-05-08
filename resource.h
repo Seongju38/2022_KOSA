@@ -58,6 +58,7 @@
 #define ID_BUTTON32845                  32845
 #define IDM_CIRCLE                      32845
 #define ID_BUTTON32846                  32846
+#define IDM_REDRAW                      32846
 #define ID_SHAPESTYLE_RECTANCLE         32847
 #define ID_SHAPESTYLE_CIRCLE            32848
 #define ID_SHAPECOLOR_32849             32849
