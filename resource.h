@@ -30,7 +30,6 @@
 #define IDC_EDIT_BED                    1009
 #define IDC_EDIT6                       1010
 #define IDC_EDIT_PHONE                  1010
-#define IDC_EDIT14                      1011
 #define IDC_EDIT_BUSINESSNICKNAME       1011
 #define IDC_EDIT9                       1013
 #define IDC_EDIT_POSTNUM                1013

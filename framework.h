@@ -32,6 +32,7 @@
 #include <afxdb.h>
 #include <vector>
 #include <memory>
+#include <map>
 
 using namespace std;
 
