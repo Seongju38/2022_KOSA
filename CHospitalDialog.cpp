@@ -32,9 +32,33 @@ IMPLEMENT_DYNAMIC(CHospitalDialog, CDialogEx)
 //
 //}
 
-CHospitalDialog::CHospitalDialog(vector<CHospitalPtr>& HList, CHospitalPtr pHospital, CWnd* pParent /*=nullptr*/)
+//CHospitalDialog::CHospitalDialog(vector<CHospitalPtr>& HList, CHospitalPtr pHospital, CWnd* pParent /*=nullptr*/)
+//	: CDialogEx(IDD_HOSPITAL_INFO, pParent)
+//	, m_HList(HList)
+//	, m_pHospital(pHospital)
+//
+//	, m_strHospitalNo(_T(""))
+//	, m_AuthDate(COleDateTime::GetCurrentTime())
+//	, m_strStatusCode(_T(""))
+//	, m_strDetaileStatusName(_T(""))
+//	, m_strPhone(_T(""))
+//	, m_strPostCode(_T(""))
+//	, m_strAddress(_T(""))
+//	, m_strRoadPostCode(_T(""))
+//	, m_strRoadAddress(_T(""))
+//	, m_strHospitalName(_T(""))
+//	, m_strBusinessName(_T(""))
+//	, m_strBusinessNickName(_T(""))
+//	, m_strWorkerNum(_T(""))
+//	, m_strRoomNum(_T(""))
+//	, m_strBedNum(_T(""))
+//{}
+
+CHospitalDialog::CHospitalDialog(vector<CHospitalPtr>& HList, vector<CHospitalStatusPtr>& HStatusList,
+											CHospitalPtr pHospital, CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_HOSPITAL_INFO, pParent)
 	, m_HList(HList)
+	, m_HStatusList(HStatusList)
 	, m_pHospital(pHospital)
 
 	, m_strHospitalNo(_T(""))
@@ -52,6 +76,8 @@ CHospitalDialog::CHospitalDialog(vector<CHospitalPtr>& HList, CHospitalPtr pHosp
 	, m_strWorkerNum(_T(""))
 	, m_strRoomNum(_T(""))
 	, m_strBedNum(_T(""))
+	, m_strStatusName(_T(""))
+	, m_strTreatmentSubject(_T(""))
 {}
 
 CHospitalDialog::~CHospitalDialog()
@@ -78,6 +104,8 @@ void CHospitalDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_BED, m_strBedNum);
 	DDX_Control(pDX, IDC_COMBO_STATUSNAME, m_comboStatusName);
 	DDX_Control(pDX, IDC_COMBO_TREATSUB, m_comboTreatmentSubject);
+	DDX_CBString(pDX, IDC_COMBO_STATUSNAME, m_strStatusName);
+	DDX_CBString(pDX, IDC_COMBO_TREATSUB, m_strTreatmentSubject);
 }
 
 
@@ -109,9 +137,16 @@ BOOL CHospitalDialog::OnInitDialog()
 	m_strWorkerNum = m_pHospital->strWorkerNum;
 	m_strRoomNum = m_pHospital->strRoomNum;
 	m_strBedNum = m_pHospital->strBedNum;
+	m_strStatusName = m_pHospital->strStatusName;
+	m_strTreatmentSubject = m_pHospital->strTreatmentSubject;
+	
 	//CComboBox m_comboStatusName;
-	//CComboBox m_comboTreatmentSubject;
+	int nIndex = 0;
+	for (const auto& pStatus : m_HStatusList) {
+		m_comboStatusName.InsertString(nIndex++, pStatus->strStatusName);
+	}
 
+	//CComboBox m_comboTreatmentSubject;
 
 	UpdateData(FALSE);
 

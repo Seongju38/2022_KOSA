@@ -2,6 +2,7 @@
 
 
 #include "CHospital.h";
+#include "CHospitalStatus.h"
 
 // CHospitalDialog 대화 상자
 
@@ -11,7 +12,10 @@ class CHospitalDialog : public CDialogEx
 
 public:
 	//CHospitalDialog(CWnd* pParent = nullptr);   // 표준 생성자입니다.
-	CHospitalDialog(vector<CHospitalPtr>& HList, CHospitalPtr pHospital, CWnd* pParent = nullptr);
+	//CHospitalDialog(vector<CHospitalPtr>& HList, CHospitalPtr pHospital, CWnd* pParent = nullptr);
+	CHospitalDialog(vector<CHospitalPtr>& HList, vector<CHospitalStatusPtr>& HStatusList,
+		CHospitalPtr pHospital, CWnd* pParent = nullptr);
+
 	virtual ~CHospitalDialog();
 
 // 대화 상자 데이터입니다.
@@ -25,6 +29,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	vector<CHospitalPtr>& m_HList;
+	vector<CHospitalStatusPtr>& m_HStatusList;
 	CHospitalPtr m_pHospital; // 병원정보
 
 	// 출력할 변수
@@ -44,7 +49,10 @@ public:
 	CString m_strRoomNum;
 	CString m_strBedNum;
 	CComboBox m_comboStatusName;
+	CString m_strStatusName;
 	CComboBox m_comboTreatmentSubject;
+	CString m_strTreatmentSubject;
 
 	virtual BOOL OnInitDialog();
+
 };

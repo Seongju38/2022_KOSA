@@ -185,6 +185,7 @@
   <ItemGroup>
     <ClInclude Include="CHospital.h" />
     <ClInclude Include="CHospitalDialog.h" />
+    <ClInclude Include="CHospitalStatus.h" />
     <ClInclude Include="CMedicalSubject.h" />
     <ClInclude Include="CMediSubList.h" />
     <ClInclude Include="framework.h" />
@@ -199,6 +200,7 @@
   <ItemGroup>
     <ClCompile Include="CHospital.cpp" />
     <ClCompile Include="CHospitalDialog.cpp" />
+    <ClCompile Include="CHospitalStatus.cpp" />
     <ClCompile Include="CMedicalSubject.cpp" />
     <ClCompile Include="CMediSubList.cpp" />
     <ClCompile Include="HWHospital.cpp" />

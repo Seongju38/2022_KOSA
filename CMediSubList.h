@@ -1,3 +1,6 @@
+
+// 병원진료과목목록
+
 #pragma once
 class CMediSubList
 {

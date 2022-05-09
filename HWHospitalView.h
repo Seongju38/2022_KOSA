@@ -8,6 +8,7 @@
 #include "CHospitalDialog.h"
 #include "CMedicalSubject.h"
 #include "CMediSubList.h"
+#include "CHospitalStatus.h"
 
 class CHWHospitalView : public CFormView
 {

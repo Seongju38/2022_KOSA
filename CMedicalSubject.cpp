@@ -1,3 +1,6 @@
+
+// 병원진료과목
+
 #include "pch.h"
 #include "CMedicalSubject.h"
 
