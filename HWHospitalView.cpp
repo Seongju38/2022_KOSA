@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CHWHospitalView, CFormView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CFormView::OnFilePrintPreview)
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CHWHospitalView::OnBnClickedButtonDelete)
+	ON_BN_CLICKED(IDC_BUTTON_MODIFY, &CHWHospitalView::OnBnClickedButtonModify)
 END_MESSAGE_MAP()
 
 // CHWHospitalView 생성/소멸
@@ -67,6 +68,39 @@ BOOL CHWHospitalView::PreCreateWindow(CREATESTRUCT& cs)
 	return CFormView::PreCreateWindow(cs);
 }
 
+void CHWHospitalView::SetHospitalListView(int nRow, const CHospitalPtr pHospital)
+{
+	m_listView.SetItemText(nRow, 1, pHospital->strAuthDate);
+	m_listView.SetItemText(nRow, 2, pHospital->strStatusName);
+	m_listView.SetItemText(nRow, 3, pHospital->strStatusCode);
+	m_listView.SetItemText(nRow, 4, pHospital->strDetaileStatusName);
+	m_listView.SetItemText(nRow, 5, pHospital->strPhone);
+	m_listView.SetItemText(nRow, 6, pHospital->strPostCode);
+	m_listView.SetItemText(nRow, 7, pHospital->strAddress);
+	m_listView.SetItemText(nRow, 8, pHospital->strRoadAddress);
+	m_listView.SetItemText(nRow, 9, pHospital->strRoadPostCode);
+	m_listView.SetItemText(nRow, 10, pHospital->strHospitalName);
+	m_listView.SetItemText(nRow, 11, pHospital->strBusinessName);
+	m_listView.SetItemText(nRow, 12, pHospital->strBusinessNickName);
+	m_listView.SetItemText(nRow, 13, pHospital->strWorkerNum);
+	m_listView.SetItemText(nRow, 14, pHospital->strRoomNum);
+	m_listView.SetItemText(nRow, 15, pHospital->strBedNum);
+	m_listView.SetItemText(nRow, 16, pHospital->strTreatmentSubject);
+}
+
+void CHWHospitalView::GetDBAllHospitalListView(vector<CHospitalPtr> HospitalList)
+{
+	//??????????????????????????????????????
+	m_listView.DeleteAllItems();
+
+	int nRow = 0;
+	for (const auto& pHospital : HospitalList) {
+		m_listView.InsertItem(nRow, pHospital->strHospitalNo, 0);
+		SetHospitalListView(nRow, pHospital);
+		nRow++;
+	}
+}
+
 void CHWHospitalView::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
@@ -74,7 +108,7 @@ void CHWHospitalView::OnInitialUpdate()
 	ResizeParentToFit();
 
 	//컬럼 정보 출력 
-	m_listView.InsertColumn(0, _T("번호"), LVCFMT_LEFT, 50);
+	m_listView.InsertColumn(0, _T("번호"), LVCFMT_LEFT, 70);
 	m_listView.InsertColumn(1, _T("인허가일자"), LVCFMT_LEFT , 80);
 	m_listView.InsertColumn(2, _T("영업상태명"), LVCFMT_LEFT, 80);
 	m_listView.InsertColumn(3, _T("상세영업상태코드"), LVCFMT_LEFT, 120);
@@ -98,29 +132,7 @@ void CHWHospitalView::OnInitialUpdate()
 
 	// 병원 전체 데이터 읽기
 	CHospitalDAO hospitalDAO(m_db);
-	vector<CHospitalPtr> list = hospitalDAO.GetListHospital();
-	int nPos = 0;
-	for (const auto& pHospital : list) {
-		m_listView.InsertItem(nPos, pHospital->strHospitalNo.GetBuffer(), 0);
-		m_listView.SetItemText(nPos, 1, pHospital->strAuthDate.GetBuffer());
-		m_listView.SetItemText(nPos, 2, pHospital->strStatusName.GetBuffer());
-		m_listView.SetItemText(nPos, 3, pHospital->strStatusCode.GetBuffer());
-		m_listView.SetItemText(nPos, 4, pHospital->strDetaileStatusName.GetBuffer());
-		m_listView.SetItemText(nPos, 5, pHospital->strPhone.GetBuffer());
-		m_listView.SetItemText(nPos, 6, pHospital->strPostCode.GetBuffer());
-		m_listView.SetItemText(nPos, 7, pHospital->strAddress.GetBuffer());
-		m_listView.SetItemText(nPos, 8, pHospital->strRoadAddress.GetBuffer());
-		m_listView.SetItemText(nPos, 9, pHospital->strRoadPostCode.GetBuffer());
-		m_listView.SetItemText(nPos, 10, pHospital->strHospitalName.GetBuffer());
-		m_listView.SetItemText(nPos, 11, pHospital->strBusinessName.GetBuffer());
-		m_listView.SetItemText(nPos, 12, pHospital->strBusinessNickName.GetBuffer());
-		m_listView.SetItemText(nPos, 13, pHospital->strWorkerNum.GetBuffer());
-		m_listView.SetItemText(nPos, 14, pHospital->strRoomNum.GetBuffer());
-		m_listView.SetItemText(nPos, 15, pHospital->strBedNum.GetBuffer());
-		m_listView.SetItemText(nPos, 16, pHospital->strTreatmentSubject.GetBuffer());
-		nPos++;
-	}
-
+	GetDBAllHospitalListView(hospitalDAO.GetListHospital());
 }
 
 
@@ -255,4 +267,10 @@ void CHWHospitalView::OnBnClickedButtonDelete()
 		p->GetErrorMessage(szErr, sizeof(szErr));
 		AfxMessageBox(szErr);
 	}
+}
+
+
+void CHWHospitalView::OnBnClickedButtonModify()
+{
+
 }

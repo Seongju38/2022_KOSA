@@ -6,7 +6,15 @@ vector<CHospitalPtr> CHospitalDAO::GetListHospital()
 	vector<CHospitalPtr> resultList;
 
 	CRecordset rs(&m_db);
-	rs.Open(CRecordset::forwardOnly, _T("SELECT * FROM 병원 WHERE 번호 <= 50"));
+	rs.Open(CRecordset::forwardOnly,
+		_T("SELECT h.번호, \
+		TO_DATE(h.인허가일자, 'YYYY-MM-DD') 인허가일자, \
+		hs.영업상태명, h.상세영업상태코드, h.상세영업상태명, \
+		h.소재지전화, h.소재지우편번호, h.소재지전체주소, \
+		h.도로명전체주소, h.도로명우편번호, h.사업장명, h.업태구분명, h.의료기관종별명, \
+		h.의료인수, h.입원실수, h.병상수, h.진료과목내용명 \
+		FROM 병원 h, 병원영업상태 hs \
+		WHERE h.영업상태명 = hs.영업상태값"));
 
 	while (!rs.IsEOF()) {
 		CHospitalPtr pHospital = make_shared<CHospital>();

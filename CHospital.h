@@ -13,8 +13,8 @@ public:
 	CString strRoadAddress;
 	CString strRoadPostCode;
 	CString strHospitalName;
-	CString strBusinessName; // 업태구분명
-	CString strBusinessNickName; // 의료기관종별명
+	CString strBusinessName;
+	CString strBusinessNickName;
 	CString strWorkerNum;
 	CString strRoomNum;
 	CString strBedNum;

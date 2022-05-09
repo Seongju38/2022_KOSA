@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "CHospital.h"
 
 class CHWHospitalView : public CFormView
 {
@@ -50,8 +51,14 @@ protected:
 public:
 	CListCtrl m_listView;
 	CDatabase m_db;
+
+	void SetHospitalListView(int nRow, const CHospitalPtr pHospital);
+	void GetDBAllHospitalListView(vector<CHospitalPtr> HospitalList);
+
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	
 	afx_msg void OnBnClickedButtonDelete();
+	afx_msg void OnBnClickedButtonModify();
 };
 
 #ifndef _DEBUG  // HWHospitalView.cpp의 디버그 버전
