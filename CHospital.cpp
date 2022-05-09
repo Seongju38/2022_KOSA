@@ -214,3 +214,49 @@ BOOL CHospitalDAO::UpdateHospital(CHospitalPtr pHospital)
 	return TRUE;
 }
 
+BOOL CHospitalDAO::InsertHospital(CHospitalPtr pHospital)
+{
+	// SQL 등록 구문
+	CString strSQL;
+	strSQL.Format(_T("INSERT INTO 병원 \
+		(번호, 인허가일자, 영업상태명, 상세영업상태코드, 상세영업상태명, \
+			소재지전화, 소재지우편번호, 소재지전체주소, 도로명전체주소, 도로명우편번호, \
+				사업장명, 업태구분명, 의료기관종별명, 의료인수, 입원실수, 병상수, 진료과목내용명) \
+		VALUES('%s', TO_DATE('%s', 'YYYY-MM-DD'), '%s', '%s', '%s', '%s', '%s', \
+				'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')"),
+		pHospital->strHospitalNo.GetBuffer(),
+		pHospital->strAuthDate.GetBuffer(),
+		pHospital->strStatusName.GetBuffer(),
+		pHospital->strStatusCode.GetBuffer(),
+		pHospital->strDetaileStatusName.GetBuffer(),
+		pHospital->strPhone.GetBuffer(),
+		pHospital->strPostCode.GetBuffer(),
+		pHospital->strAddress.GetBuffer(),
+		pHospital->strRoadAddress.GetBuffer(),
+		pHospital->strRoadPostCode.GetBuffer(),
+		pHospital->strHospitalName.GetBuffer(),
+		pHospital->strBusinessName.GetBuffer(),
+		pHospital->strBusinessNickName.GetBuffer(),
+		pHospital->strWorkerNum.GetBuffer(),
+		pHospital->strRoomNum.GetBuffer(),
+		pHospital->strBedNum.GetBuffer(),
+		pHospital->strTreatmentSubject.GetBuffer());
+
+	AfxMessageBox(strSQL);
+
+	try {
+		m_db.BeginTrans();
+		m_db.ExecuteSQL(strSQL.GetBuffer());
+		m_db.CommitTrans();
+	}
+	catch (const CException* pEx) {
+		m_db.Rollback();
+		TCHAR szErr[100];
+		pEx->GetErrorMessage(szErr, sizeof(szErr));
+		AfxMessageBox(szErr);
+		return FALSE;
+	}
+
+	return TRUE;
+}
+

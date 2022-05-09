@@ -63,6 +63,7 @@ public:
 	
 	afx_msg void OnBnClickedButtonDelete();
 	afx_msg void OnBnClickedButtonModify();
+	afx_msg void OnBnClickedButtonAdd();
 };
 
 #ifndef _DEBUG  // HWHospitalView.cpp의 디버그 버전

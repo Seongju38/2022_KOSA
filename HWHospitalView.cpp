@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CHWHospitalView, CFormView)
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CHWHospitalView::OnBnClickedButtonDelete)
 	ON_BN_CLICKED(IDC_BUTTON_MODIFY, &CHWHospitalView::OnBnClickedButtonModify)
+	ON_BN_CLICKED(IDC_BUTTON_ADD, &CHWHospitalView::OnBnClickedButtonAdd)
 END_MESSAGE_MAP()
 
 // CHWHospitalView 생성/소멸
@@ -244,7 +245,7 @@ void CHWHospitalView::OnBnClickedButtonDelete()
 			// 맨 뒤에 있는 (,) 삭제
 			strInParam.Delete(strInParam.GetLength() - 1, 1);
 
-			AfxMessageBox(strInParam + _T("을 삭제하시겠습니까?"));
+			AfxMessageBox(_T("병원 번호 ") + strInParam + _T("을 삭제하시겠습니까?"));
 
 			// SQL 삭제 구문 생성
 			strSQL = _T("DELETE FROM 병원 WHERE 번호 IN (") + strInParam + _T(")");
@@ -257,6 +258,8 @@ void CHWHospitalView::OnBnClickedButtonDelete()
 			for (int i = 0; i < arr.GetSize(); i++) {
 				m_listView.DeleteItem(arr.GetAt(i));
 			}
+
+			AfxMessageBox(_T("병원 번호 ") + strInParam + _T("을 삭제했습니다."));
 		}
 	}
 	catch (const CException* p) {
@@ -357,6 +360,54 @@ void CHWHospitalView::OnBnClickedButtonModify()
 		//CHospitalDAO HDAO(m_db);
 		if (HDAO.UpdateHospital(pHospitalData)) {
 			//리스트 컨트롤 화면 변경 
+			SetHospitalListView(nRow, pHospitalData);
+		}
+	}
+}
+
+
+void CHWHospitalView::OnBnClickedButtonAdd()
+{
+	CHospitalDAO HDAO(m_db);
+	vector<CHospitalPtr> HList = HDAO.GetListHospital();
+	CHospitalStatusDAO HStatusDAO(m_db);
+	vector<CHospitalStatusPtr> HStatusList = HStatusDAO.GetListHospitalStatus();
+	CMedicalSubjectDAO MediSubjectDAO(m_db);
+	map<CString, CString> mapMedicalSubject = MediSubjectDAO.GetMapMedicalSubject();
+
+	CMediSubListDAO MediSubListDAO(m_db);
+	CMediSubListPtr pMediSubList = make_shared<CMediSubList>();
+
+	// CHospitalPtr 객체 생성
+	CHospitalPtr pHospitalData = make_shared<CHospital>();
+
+
+
+	CHospitalDialog dlg(HList, HStatusList, mapMedicalSubject, pHospitalData);
+
+	if (dlg.DoModal() == IDOK) {
+		pHospitalData->strHospitalNo = dlg.m_strHospitalNo;
+		pHospitalData->strAuthDate = dlg.m_AuthDate.Format(_T("%Y-%m-%d"));
+		pHospitalData->strStatusCode = dlg.m_strStatusCode;
+		pHospitalData->strDetaileStatusName = dlg.m_strDetaileStatusName;
+		pHospitalData->strPhone = dlg.m_strPhone;
+		pHospitalData->strPostCode = dlg.m_strPostCode;
+		pHospitalData->strAddress = dlg.m_strAddress;
+		pHospitalData->strRoadAddress = dlg.m_strRoadAddress;
+		pHospitalData->strRoadPostCode = dlg.m_strRoadPostCode;
+		pHospitalData->strHospitalName = dlg.m_strHospitalName;
+		pHospitalData->strBusinessName = dlg.m_strBusinessName;
+		pHospitalData->strBusinessNickName = dlg.m_strBusinessNickName;
+		pHospitalData->strWorkerNum = dlg.m_strWorkerNum;
+		pHospitalData->strRoomNum = dlg.m_strRoomNum;
+		pHospitalData->strBedNum = dlg.m_strBedNum;
+
+		pHospitalData->strTreatmentSubject = dlg.m_strTreatmentSubject;
+
+
+		if (HDAO.InsertHospital(pHospitalData)) {
+			int nRow = m_listView.GetItemCount();
+			m_listView.InsertItem(nRow, pHospitalData->strHospitalNo, 0);
 			SetHospitalListView(nRow, pHospitalData);
 		}
 	}

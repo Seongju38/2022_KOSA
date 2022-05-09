@@ -2,6 +2,28 @@
 class CHospital
 {
 public:
+	CHospital() :
+		strHospitalNo(_T("")),
+		strAuthDate(_T("")),
+		strStatusName(_T("")),
+		strStatusCode(_T("")),
+		strDetaileStatusName(_T("")),
+		strPhone(_T("")),
+		strPostCode(_T("")),
+		strAddress(_T("")),
+		strRoadAddress(_T("")),
+		strRoadPostCode(_T("")),
+		strHospitalName(_T("")),
+		strBusinessName(_T("")),
+		strBusinessNickName(_T("")),
+		strWorkerNum(_T("")),
+		strRoomNum(_T("")),
+		strBedNum(_T("")),
+		strTreatmentSubject(_T(""))
+	{
+
+	}
+
 	CString strHospitalNo;
 	CString strAuthDate;
 	CString strStatusName;
@@ -32,7 +54,7 @@ public:
 	vector<CHospitalPtr> GetListHospital();
 	CHospitalPtr GetDetailHospital(CString strHospitalNo);
 	BOOL UpdateHospital(CHospitalPtr pHospital);
-
+	BOOL InsertHospital(CHospitalPtr );
 };
 
 
