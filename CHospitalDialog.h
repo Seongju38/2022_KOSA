@@ -3,6 +3,7 @@
 
 #include "CHospital.h";
 #include "CHospitalStatus.h"
+#include "CMedicalSubject.h"
 
 // CHospitalDialog 대화 상자
 
@@ -13,9 +14,10 @@ class CHospitalDialog : public CDialogEx
 public:
 	//CHospitalDialog(CWnd* pParent = nullptr);   // 표준 생성자입니다.
 	//CHospitalDialog(vector<CHospitalPtr>& HList, CHospitalPtr pHospital, CWnd* pParent = nullptr);
+	/*CHospitalDialog(vector<CHospitalPtr>& HList, vector<CHospitalStatusPtr>& HStatusList,
+		CHospitalPtr pHospital, CWnd* pParent = nullptr);*/
 	CHospitalDialog(vector<CHospitalPtr>& HList, vector<CHospitalStatusPtr>& HStatusList,
-		CHospitalPtr pHospital, CWnd* pParent = nullptr);
-
+		map<CString, CString>& mapMedicalSubject, CHospitalPtr pHospital, CWnd* pParent = nullptr);
 	virtual ~CHospitalDialog();
 
 // 대화 상자 데이터입니다.
@@ -30,6 +32,7 @@ protected:
 public:
 	vector<CHospitalPtr>& m_HList;
 	vector<CHospitalStatusPtr>& m_HStatusList;
+	map<CString, CString>& m_mapMedicalSubject;
 	CHospitalPtr m_pHospital; // 병원정보
 
 	// 출력할 변수
@@ -55,4 +58,6 @@ public:
 
 	virtual BOOL OnInitDialog();
 
+	afx_msg void OnCbnSelendokComboStatusname();
+	afx_msg void OnCbnSelendokComboTreatsub();
 };

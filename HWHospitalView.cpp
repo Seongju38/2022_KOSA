@@ -293,18 +293,71 @@ void CHWHospitalView::OnBnClickedButtonModify()
 	vector<CHospitalPtr> HList = HDAO.GetListHospital();
 	CHospitalStatusDAO HStatusDAO(m_db);
 	vector<CHospitalStatusPtr> HStatusList = HStatusDAO.GetListHospitalStatus();
+	CMedicalSubjectDAO MediSubjectDAO(m_db);
+	map<CString, CString> mapMedicalSubject = MediSubjectDAO.GetMapMedicalSubject(); 
+	
+	CMediSubListDAO MediSubListDAO(m_db);
+	//MediSubListDAO.DeleteAllMediSubList(); // 병원진료과목목록 전체 삭제
+	CMediSubListPtr pMediSubList = make_shared<CMediSubList>();
 
 	// 병원 번호로 병원 상세 정보 얻기
 	CHospitalPtr pHospitalData = HDAO.GetDetailHospital(strHospitalNo);
 
+	// 병원진료과목 (,· ) 기준으로 분리
+	int nPos = 0;
+	for (const auto& pHospital : HList) {
+		// 병원진료과목목록 문자열 포인터 얻기
+		LPTSTR lpszMediSubject = pHospital->strTreatmentSubject.GetBuffer();
+		LPTSTR lpszToken = NULL;
+		LPTSTR lpszNextToken = NULL;
+
+		lpszToken = _tcstok_s(lpszMediSubject, _T(",· "), &lpszNextToken);
+		while (lpszToken) {
+			//m_listView.InsertItem(nPos, pHospital->strHospitalNo.GetBuffer(), 0);
+			//// 문자열 화면에 출력
+			//m_listView.SetItemText(nPos, 16, lpszToken);
+
+			// 병원진료과목에 대한 코드 찾기
+			// 찾은 코드와 병원 번호를 이용하여 DB(병원진료과목목록 테이블)에 추가 
+			pMediSubList->strHospitalNo = pHospital->strHospitalNo;
+			pMediSubList->strTreatCode = mapMedicalSubject[lpszToken];
+			if (!pMediSubList->strTreatCode.IsEmpty()) {
+				MediSubListDAO.InsertMediSubList(pMediSubList);
+			}
+			nPos++;
+			lpszToken = _tcstok_s(NULL, _T(",· "), &lpszNextToken);
+		}
+	}
 
 	// 대화상자에 병원 데이터 전달 및 출력
 	//CHospitalDialog dlg;
 	//CHospitalDialog dlg(HList, pHospitalData);
-	CHospitalDialog dlg(HList, HStatusList, pHospitalData);
+	//CHospitalDialog dlg(HList, HStatusList, pHospitalData);
+	CHospitalDialog dlg(HList, HStatusList, mapMedicalSubject, pHospitalData);
 
 	if (dlg.DoModal() == IDOK) {
-		pHospitalData->strHospitalNo = dlg.m_strHospitalName;
+		pHospitalData->strHospitalNo = dlg.m_strHospitalNo;
+		pHospitalData->strAuthDate = dlg.m_AuthDate.Format(_T("%Y-%m-%d"));
+		pHospitalData->strStatusCode = dlg.m_strStatusCode;
+		pHospitalData->strDetaileStatusName = dlg.m_strDetaileStatusName;
+		pHospitalData->strPhone = dlg.m_strPhone;
+		pHospitalData->strPostCode = dlg.m_strPostCode;
+		pHospitalData->strAddress = dlg.m_strAddress;
+		pHospitalData->strRoadAddress = dlg.m_strRoadAddress;
+		pHospitalData->strRoadPostCode = dlg.m_strRoadPostCode;
+		pHospitalData->strHospitalName = dlg.m_strHospitalName;
+		pHospitalData->strBusinessName = dlg.m_strBusinessName;
+		pHospitalData->strBusinessNickName = dlg.m_strBusinessNickName;
+		pHospitalData->strWorkerNum = dlg.m_strWorkerNum;
+		pHospitalData->strRoomNum = dlg.m_strRoomNum;
+		pHospitalData->strBedNum = dlg.m_strBedNum;
 
+		pHospitalData->strTreatmentSubject = dlg.m_strTreatmentSubject;
+
+		//CHospitalDAO HDAO(m_db);
+		if (HDAO.UpdateHospital(pHospitalData)) {
+			//리스트 컨트롤 화면 변경 
+			SetHospitalListView(nRow, pHospitalData);
+		}
 	}
 }

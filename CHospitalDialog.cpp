@@ -54,11 +54,38 @@ IMPLEMENT_DYNAMIC(CHospitalDialog, CDialogEx)
 //	, m_strBedNum(_T(""))
 //{}
 
+//CHospitalDialog::CHospitalDialog(vector<CHospitalPtr>& HList, vector<CHospitalStatusPtr>& HStatusList,
+//											CHospitalPtr pHospital, CWnd* pParent /*=nullptr*/)
+//	: CDialogEx(IDD_HOSPITAL_INFO, pParent)
+//	, m_HList(HList)
+//	, m_HStatusList(HStatusList)
+//	, m_pHospital(pHospital)
+//
+//	, m_strHospitalNo(_T(""))
+//	, m_AuthDate(COleDateTime::GetCurrentTime())
+//	, m_strStatusCode(_T(""))
+//	, m_strDetaileStatusName(_T(""))
+//	, m_strPhone(_T(""))
+//	, m_strPostCode(_T(""))
+//	, m_strAddress(_T(""))
+//	, m_strRoadPostCode(_T(""))
+//	, m_strRoadAddress(_T(""))
+//	, m_strHospitalName(_T(""))
+//	, m_strBusinessName(_T(""))
+//	, m_strBusinessNickName(_T(""))
+//	, m_strWorkerNum(_T(""))
+//	, m_strRoomNum(_T(""))
+//	, m_strBedNum(_T(""))
+//	, m_strStatusName(_T(""))
+//	, m_strTreatmentSubject(_T(""))
+//{}
+
 CHospitalDialog::CHospitalDialog(vector<CHospitalPtr>& HList, vector<CHospitalStatusPtr>& HStatusList,
-											CHospitalPtr pHospital, CWnd* pParent /*=nullptr*/)
+				map<CString, CString>& mapMedicalSubject, CHospitalPtr pHospital, CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_HOSPITAL_INFO, pParent)
 	, m_HList(HList)
 	, m_HStatusList(HStatusList)
+	, m_mapMedicalSubject(mapMedicalSubject)
 	, m_pHospital(pHospital)
 
 	, m_strHospitalNo(_T(""))
@@ -110,6 +137,8 @@ void CHospitalDialog::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CHospitalDialog, CDialogEx)
+	ON_CBN_SELENDOK(IDC_COMBO_STATUSNAME, &CHospitalDialog::OnCbnSelendokComboStatusname)
+	ON_CBN_SELENDOK(IDC_COMBO_TREATSUB, &CHospitalDialog::OnCbnSelendokComboTreatsub)
 END_MESSAGE_MAP()
 
 
@@ -123,7 +152,7 @@ BOOL CHospitalDialog::OnInitDialog()
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
 	m_strHospitalNo = m_pHospital->strHospitalNo;
-	//COleDateTime m_AuthDate;
+	m_AuthDate.ParseDateTime(m_pHospital->strAuthDate);
 	m_strStatusCode = m_pHospital->strStatusCode;
 	m_strDetaileStatusName = m_pHospital->strDetaileStatusName;
 	m_strPhone = m_pHospital->strPhone;
@@ -139,7 +168,8 @@ BOOL CHospitalDialog::OnInitDialog()
 	m_strBedNum = m_pHospital->strBedNum;
 	m_strStatusName = m_pHospital->strStatusName;
 	m_strTreatmentSubject = m_pHospital->strTreatmentSubject;
-	
+
+
 	//CComboBox m_comboStatusName;
 	int nIndex = 0;
 	for (const auto& pStatus : m_HStatusList) {
@@ -147,9 +177,35 @@ BOOL CHospitalDialog::OnInitDialog()
 	}
 
 	//CComboBox m_comboTreatmentSubject;
+	nIndex = 0;
+	for (const auto& pMediSub : m_mapMedicalSubject) {
+		m_comboTreatmentSubject.InsertString(nIndex++, pMediSub.first);
+	}
 
 	UpdateData(FALSE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+
+void CHospitalDialog::OnCbnSelendokComboStatusname()
+{
+	// 현재 선택된 위치 얻음
+	int nCurSel = m_comboStatusName.GetCurSel();
+	if (nCurSel >= 0 && nCurSel <= m_HStatusList.size() - 1) {
+		const CHospitalStatusPtr pStatus = m_HStatusList[nCurSel];
+		//AfxMessageBox(pStatus->strStatusName);
+
+		m_pHospital->strStatusName = pStatus->strStatusValue;
+	}
+}
+
+
+
+// 진료과목내용명
+void CHospitalDialog::OnCbnSelendokComboTreatsub()
+{
+	// 배열이 아니기에 쉽게 인덱스 값으로 현재 선택된 위치 얻기가 어려움
+	// map 이니까 key를 찾아서 몇 번째인지 구해서 위치를 얻을 수 있으려나...?
 }

@@ -31,6 +31,7 @@ public:
 
 	vector<CHospitalPtr> GetListHospital();
 	CHospitalPtr GetDetailHospital(CString strHospitalNo);
+	BOOL UpdateHospital(CHospitalPtr pHospital);
 
 };
 
