@@ -19,7 +19,6 @@ public:
 	CString strRoomNum;
 	CString strBedNum;
 	CString strTreatmentSubject;
-
 };
 using CHospitalPtr = shared_ptr<CHospital>;
 
@@ -31,6 +30,7 @@ public:
 	}
 
 	vector<CHospitalPtr> GetListHospital();
+	CHospitalPtr GetDetailHospital(CString strHospitalNo);
 
 };
 

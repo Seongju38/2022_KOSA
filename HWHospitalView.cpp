@@ -13,7 +13,6 @@
 #include "HWHospitalDoc.h"
 #include "HWHospitalView.h"
 
-#include "CHospital.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -237,7 +236,7 @@ void CHWHospitalView::OnBnClickedButtonDelete()
 
 	try {
 		if (strInParam.IsEmpty()) {
-			AfxMessageBox(_T("삭제 할 병원을 선택해 주세요"));
+			AfxMessageBox(_T("삭제할 병원을 선택해 주세요"));
 			return;
 		}
 
@@ -272,5 +271,38 @@ void CHWHospitalView::OnBnClickedButtonDelete()
 
 void CHWHospitalView::OnBnClickedButtonModify()
 {
+	const int nCount = m_listView.GetItemCount();
+	CString strHospitalNo;
 
+	// 수정하기 위해 선택된 병원 번호 얻기
+	int nRow;
+	for (int i = nCount - 1; i >= 0; --i) {
+		if (m_listView.GetCheck(i)) {
+			strHospitalNo = m_listView.GetItemText(i, 0);
+			nRow = i;
+			break;
+		}
+	}
+
+	if (strHospitalNo.IsEmpty()) {
+		AfxMessageBox(_T("수정할 병원을 선택해 주세요."));
+		return;
+	}
+
+	CHospitalDAO HDAO(m_db);
+
+	vector<CHospitalPtr> HList = HDAO.GetListHospital();
+
+	// 병원 번호로 병원 상세 정보 얻기
+	CHospitalPtr pHospital = HDAO.GetDetailHospital(strHospitalNo);
+
+
+	// 대화상자에 병원 데이터 전달 및 출력
+	//CHospitalDialog dlg;
+	CHospitalDialog dlg(HList, pHospital);
+
+	if (dlg.DoModal() == IDOK) {
+		pHospital->strHospitalNo = dlg.m_strHospitalName;
+
+	}
 }

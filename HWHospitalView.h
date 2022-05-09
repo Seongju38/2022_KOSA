@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CHospital.h"
+#include "CHospitalDialog.h"
 
 class CHWHospitalView : public CFormView
 {
