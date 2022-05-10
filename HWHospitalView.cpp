@@ -91,7 +91,6 @@ void CHWHospitalView::SetHospitalListView(int nRow, const CHospitalPtr pHospital
 
 void CHWHospitalView::GetDBAllHospitalListView(vector<CHospitalPtr> HospitalList)
 {
-	//??????????????????????????????????????
 	m_listView.DeleteAllItems();
 
 	int nRow = 0;
@@ -418,6 +417,7 @@ void CHWHospitalView::OnBnClickedButtonAdd()
 			m_listView.InsertItem(nRow, pHospitalData->strHospitalNo, 0);
 			SetHospitalListView(nRow, pHospitalData);
 		}
+		AfxMessageBox(_T("신규 병원 정보를 등록했습니다."));
 	}
 }
 

@@ -23,4 +23,8 @@ protected:
 public:
 	CString m_strHospitalName;
 	CString m_strHospitalPhone;
+	afx_msg void OnEnChangeEditName();
+	afx_msg void OnEnChangeEditPhone();
+
+	void CheckStr();
 };

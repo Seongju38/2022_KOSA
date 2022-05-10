@@ -130,8 +130,8 @@ CHospitalPtr CHospitalDAO::GetDetailHospital(CString strHospitalNo)
 			LISTAGG(DISTINCT d.진료과목명, ',') WITHIN GROUP(ORDER BY d.진료과목명), \
 			LISTAGG(DISTINCT dl.진료과목코드, ',') \
 			FROM 병원 h, 병원진료과목목록 dl, 병원진료과목 d, 병원영업상태 s \
-			WHERE h.번호 = dl.번호(+) \
-			AND d.진료과목코드 = dl.진료과목코드(+) \
+			WHERE h.번호 = dl.번호 (+) \
+			AND d.진료과목코드 = dl.진료과목코드 (+) \
 			AND h.영업상태명 = s.영업상태값 \
 			GROUP BY h.번호, h.인허가일자, s.영업상태명, h.상세영업상태코드, h.상세영업상태명, \
 			h.소재지전화, h.소재지우편번호, h.소재지전체주소, h.도로명전체주소, h.도로명우편번호, \

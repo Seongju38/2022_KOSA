@@ -226,7 +226,6 @@ void CHospitalDialog::OnBnClickedOk()
 	if (IsEmpty(m_strHospitalNo, _T("병원번호를 입력해주세요"), IDC_EDIT_HNO)) return;
 	if (IsEmpty(m_strStatusName, _T("영업상태명을 선택해주세요"), IDC_COMBO_STATUSNAME)) return;
 	if (IsEmpty(m_strPhone, _T("소재지전화를 입력해주세요"), IDC_EDIT_PHONE)) return;
-	if (IsEmpty(m_strAddress, _T("소재지전체주소를 입력해주세요"), IDC_EDIT_ADDRESS)) return;
 	if (IsEmpty(m_strHospitalName, _T("사업장명을 입력해주세요"), IDC_EDIT_NAME)) return;
 	if (IsEmpty(m_strTreatmentSubject, _T("진료과목내용명을 선택해주세요"), IDC_COMBO_TREATSUB)) return;
 	
