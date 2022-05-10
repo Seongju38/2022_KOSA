@@ -25,6 +25,9 @@ public:
 	enum { IDD = IDD_HOSPITAL_INFO };
 #endif
 
+private:
+	bool IsEmpty(const CString& strText, LPCTSTR lpszMsg, UINT id) const;
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
@@ -60,4 +63,6 @@ public:
 
 	afx_msg void OnCbnSelendokComboStatusname();
 	afx_msg void OnCbnSelendokComboTreatsub();
+	afx_msg void OnBnClickedOk();
+
 };

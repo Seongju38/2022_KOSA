@@ -412,6 +412,7 @@ void CHWHospitalView::OnBnClickedButtonAdd()
 		pHospitalData->strTreatmentSubject = dlg.m_strTreatmentSubject;
 
 
+
 		if (HDAO.InsertHospital(pHospitalData)) {
 			int nRow = m_listView.GetItemCount();
 			m_listView.InsertItem(nRow, pHospitalData->strHospitalNo, 0);
