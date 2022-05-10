@@ -8,6 +8,7 @@
 #define IDR_MAINFRAME                   128
 #define IDR_HWHospitalTYPE              130
 #define IDD_HOSPITAL_INFO               311
+#define IDD_HOSPITAL_FIND               312
 #define IDC_LIST2                       1001
 #define IDC_BUTTON_SEARCH               1002
 #define IDC_LIST1                       1003

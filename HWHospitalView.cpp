@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CHWHospitalView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CHWHospitalView::OnBnClickedButtonDelete)
 	ON_BN_CLICKED(IDC_BUTTON_MODIFY, &CHWHospitalView::OnBnClickedButtonModify)
 	ON_BN_CLICKED(IDC_BUTTON_ADD, &CHWHospitalView::OnBnClickedButtonAdd)
+	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CHWHospitalView::OnBnClickedButtonSearch)
 END_MESSAGE_MAP()
 
 // CHWHospitalView 생성/소멸
@@ -294,8 +295,10 @@ void CHWHospitalView::OnBnClickedButtonModify()
 
 	CHospitalDAO HDAO(m_db);
 	vector<CHospitalPtr> HList = HDAO.GetListHospital();
+
 	CHospitalStatusDAO HStatusDAO(m_db);
 	vector<CHospitalStatusPtr> HStatusList = HStatusDAO.GetListHospitalStatus();
+
 	CMedicalSubjectDAO MediSubjectDAO(m_db);
 	map<CString, CString> mapMedicalSubject = MediSubjectDAO.GetMapMedicalSubject(); 
 	
@@ -319,6 +322,7 @@ void CHWHospitalView::OnBnClickedButtonModify()
 			//m_listView.InsertItem(nPos, pHospital->strHospitalNo.GetBuffer(), 0);
 			//// 문자열 화면에 출력
 			//m_listView.SetItemText(nPos, 16, lpszToken);
+
 
 			// 병원진료과목에 대한 코드 찾기
 			// 찾은 코드와 병원 번호를 이용하여 DB(병원진료과목목록 테이블)에 추가 
@@ -362,6 +366,7 @@ void CHWHospitalView::OnBnClickedButtonModify()
 			//리스트 컨트롤 화면 변경 
 			SetHospitalListView(nRow, pHospitalData);
 		}
+		AfxMessageBox(_T("병원 번호 ") + dlg.m_strHospitalNo + _T("을 수정했습니다."));
 	}
 }
 
@@ -370,8 +375,10 @@ void CHWHospitalView::OnBnClickedButtonAdd()
 {
 	CHospitalDAO HDAO(m_db);
 	vector<CHospitalPtr> HList = HDAO.GetListHospital();
+
 	CHospitalStatusDAO HStatusDAO(m_db);
 	vector<CHospitalStatusPtr> HStatusList = HStatusDAO.GetListHospitalStatus();
+
 	CMedicalSubjectDAO MediSubjectDAO(m_db);
 	map<CString, CString> mapMedicalSubject = MediSubjectDAO.GetMapMedicalSubject();
 
@@ -410,5 +417,15 @@ void CHWHospitalView::OnBnClickedButtonAdd()
 			m_listView.InsertItem(nRow, pHospitalData->strHospitalNo, 0);
 			SetHospitalListView(nRow, pHospitalData);
 		}
+	}
+}
+
+
+void CHWHospitalView::OnBnClickedButtonSearch()
+{
+	CHospitalFindDlg dlg;
+	if (dlg.DoModal() == IDOK) {
+		CHospitalDAO HDAO(m_db);
+		GetDBAllHospitalListView(HDAO.GetListHospitalFind(dlg.m_strHospitalName, dlg.m_strHospitalPhone));
 	}
 }

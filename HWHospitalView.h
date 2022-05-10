@@ -9,6 +9,7 @@
 #include "CMedicalSubject.h"
 #include "CMediSubList.h"
 #include "CHospitalStatus.h"
+#include "CHospitalFindDlg.h"
 
 class CHWHospitalView : public CFormView
 {
@@ -64,6 +65,7 @@ public:
 	afx_msg void OnBnClickedButtonDelete();
 	afx_msg void OnBnClickedButtonModify();
 	afx_msg void OnBnClickedButtonAdd();
+	afx_msg void OnBnClickedButtonSearch();
 };
 
 #ifndef _DEBUG  // HWHospitalView.cpp의 디버그 버전

@@ -132,7 +132,7 @@ CHospitalPtr CHospitalDAO::GetDetailHospital(CString strHospitalNo)
 			FROM 병원 h, 병원진료과목목록 dl, 병원진료과목 d, 병원영업상태 s \
 			WHERE h.번호 = dl.번호 \
 			AND d.진료과목코드 = dl.진료과목코드 \
-			AND h.영업상태명 = 영업상태값 \
+			AND h.영업상태명 = s.영업상태값 \
 			GROUP BY h.번호, h.인허가일자, s.영업상태명, h.상세영업상태코드, h.상세영업상태명, \
 			h.소재지전화, h.소재지우편번호, h.소재지전체주소, h.도로명전체주소, h.도로명우편번호, \
 			h.사업장명, h.업태구분명, h.의료기관종별명, \
@@ -195,8 +195,8 @@ BOOL CHospitalDAO::UpdateHospital(CHospitalPtr pHospital)
 		pHospital->strBedNum.GetBuffer(),
 		pHospital->strTreatmentSubject.GetBuffer(),
 		pHospital->strHospitalNo.GetBuffer());
-	AfxMessageBox(pHospital->strHospitalNo);
-	AfxMessageBox(strSQL);
+
+	//AfxMessageBox(strSQL);
 
 	try {
 		m_db.BeginTrans();
@@ -242,7 +242,7 @@ BOOL CHospitalDAO::InsertHospital(CHospitalPtr pHospital)
 		pHospital->strBedNum.GetBuffer(),
 		pHospital->strTreatmentSubject.GetBuffer());
 
-	AfxMessageBox(strSQL);
+	//AfxMessageBox(strSQL);
 
 	try {
 		m_db.BeginTrans();
@@ -258,5 +258,69 @@ BOOL CHospitalDAO::InsertHospital(CHospitalPtr pHospital)
 	}
 
 	return TRUE;
+}
+
+
+vector<CHospitalPtr> CHospitalDAO::GetListHospitalFind(CString strHospitalName, CString strHospitalPhone)
+{
+	vector<CHospitalPtr> resultList;
+
+	// 검색 SQL 구문 생성
+	CString strSQL;
+
+	strSQL.Format(_T("SELECT h.번호, TO_DATE(h.인허가일자, 'YYYY-MM-DD') AS 인허가일자, s.영업상태명, h.상세영업상태코드, h.상세영업상태명, \
+		h.소재지전화, h.소재지우편번호, h.소재지전체주소, h.도로명전체주소, h.도로명우편번호, \
+		h.사업장명, h.업태구분명, h.의료기관종별명, \
+		h.의료인수, h.입원실수, h.병상수, h.진료과목내용명, \
+		LISTAGG(DISTINCT d.진료과목명, ',') WITHIN GROUP(ORDER BY d.진료과목명), \
+		LISTAGG(DISTINCT dl.진료과목코드, ',') \
+		FROM 병원 h, 병원진료과목목록 dl, 병원진료과목 d, 병원영업상태 s \
+		WHERE h.번호 = dl.번호(+) \
+		AND d.진료과목코드 = dl.진료과목코드(+) \
+		AND h.영업상태명 = s.영업상태값 \
+		AND h.사업장명 LIKE '%s%%' \
+		AND h.소재지전화 LIKE '%s%%' \
+		GROUP BY h.번호, h.인허가일자, s.영업상태명, h.상세영업상태코드, h.상세영업상태명, \
+		h.소재지전화, h.소재지우편번호, h.소재지전체주소, h.도로명전체주소, h.도로명우편번호, \
+		h.사업장명, h.업태구분명, h.의료기관종별명, \
+		h.의료인수, h.입원실수, h.병상수, h.진료과목내용명")
+			, strHospitalName.GetBuffer()
+			, strHospitalPhone.GetBuffer());
+
+	CRecordset rs(&m_db);
+	rs.Open(CRecordset::forwardOnly, strSQL.GetBuffer());
+
+	// SQL 구문 실행 결과 얻기 
+	while (!rs.IsEOF()) {
+		// 스마트 포인터를 이용하여 객체 생성함
+		CHospitalPtr pHospital = make_shared<CHospital>();
+		if (pHospital == nullptr) return vector<CHospitalPtr>();
+
+		rs.GetFieldValue(_T("번호"), pHospital->strHospitalNo);
+		rs.GetFieldValue(_T("인허가일자"), pHospital->strAuthDate);
+		rs.GetFieldValue(_T("영업상태명"), pHospital->strStatusName);
+		rs.GetFieldValue(_T("상세영업상태코드"), pHospital->strStatusCode);
+		rs.GetFieldValue(_T("상세영업상태명"), pHospital->strDetaileStatusName);
+		rs.GetFieldValue(_T("소재지전화"), pHospital->strPhone);
+		rs.GetFieldValue(_T("소재지우편번호"), pHospital->strPostCode);
+		rs.GetFieldValue(_T("소재지전체주소"), pHospital->strAddress);
+		rs.GetFieldValue(_T("도로명전체주소"), pHospital->strRoadAddress);
+		rs.GetFieldValue(_T("도로명우편번호"), pHospital->strRoadPostCode);
+		rs.GetFieldValue(_T("사업장명"), pHospital->strHospitalName);
+		rs.GetFieldValue(_T("업태구분명"), pHospital->strBusinessName);
+		rs.GetFieldValue(_T("의료기관종별명"), pHospital->strBusinessNickName);
+		rs.GetFieldValue(_T("의료인수"), pHospital->strWorkerNum);
+		rs.GetFieldValue(_T("입원실수"), pHospital->strRoomNum);
+		rs.GetFieldValue(_T("병상수"), pHospital->strBedNum);
+		rs.GetFieldValue(_T("진료과목내용명"), pHospital->strTreatmentSubject);
+
+		rs.MoveNext();
+		 
+		// 배열에 스마트 포인터 객체를 추가한
+		resultList.push_back(pHospital);
+	}
+	rs.Close();
+
+	return resultList;
 }
 

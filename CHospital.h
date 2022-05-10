@@ -55,6 +55,7 @@ public:
 	CHospitalPtr GetDetailHospital(CString strHospitalNo);
 	BOOL UpdateHospital(CHospitalPtr pHospital);
 	BOOL InsertHospital(CHospitalPtr );
+	vector<CHospitalPtr> GetListHospitalFind(CString strHospitalName, CString strHospitalPhone);
 };
 
 
