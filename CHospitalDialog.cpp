@@ -151,6 +151,11 @@ BOOL CHospitalDialog::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
+	
+	// 번호가 비어있다면 활성화 시켜서 입력
+	if (m_pHospital->strHospitalNo.IsEmpty()) {
+		((CEdit*)GetDlgItem(IDC_EDIT_HNO))->SetReadOnly(FALSE);
+	}
 
 	m_strHospitalNo = m_pHospital->strHospitalNo;
 	m_AuthDate.ParseDateTime(m_pHospital->strAuthDate);
