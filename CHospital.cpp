@@ -316,7 +316,7 @@ vector<CHospitalPtr> CHospitalDAO::GetListHospitalFind(CString strHospitalName, 
 
 		rs.MoveNext();
 		 
-		// 배열에 스마트 포인터 객체를 추가한
+		// 배열에 스마트 포인터 객체를 추가함
 		resultList.push_back(pHospital);
 	}
 	rs.Close();

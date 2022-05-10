@@ -4,7 +4,7 @@ class CHospital
 public:
 	CHospital() :
 		strHospitalNo(_T("")),
-		strAuthDate(_T("")),
+		strAuthDate(_T("1997-03-08")),
 		strStatusName(_T("")),
 		strStatusCode(_T("")),
 		strDetaileStatusName(_T("")),
