@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Oracle.ManagedDataAccess.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,6 +33,42 @@ namespace aspdotnet_react.models
      */
     public class TodoItemRepository
     {
+        private OracleConnection conn;
 
+        public TodoItemRepository()
+        {
+            conn = new OracleConnection("Data Source=xe;User Id=user1;Password=passwd;");
+            conn.Open();
+        }
+
+        ~TodoItemRepository()
+        {
+            conn.Close();
+        }
+
+        public void createBulkTodos()
+        {
+            // [1] Command 객체 생성
+            OracleCommand cmd = new OracleCommand();
+
+            // [2] Connection 객체 연결
+            cmd.Connection = conn;
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            // [3] SQL 생성 및 실행
+            for (int i = 0; i < 2500; i++)
+            {
+                if (i % 5 == 0)
+                {
+                    cmd.CommandText = $"insert into tb_todo_item (id, title, completed) values (SEQ_TODO_ITEM_ID.nextval, '리액트의 기초 ${i}', 'Y')";
+                }
+                else
+                {
+                    cmd.CommandText = $"insert into tb_todo_item (id, title, completed) values (SEQ_TODO_ITEM_ID.nextval, '리액트의 기초 ${i}', 'N')";
+                }
+                cmd.ExecuteNonQuery();
+            }
+
+        }
     }
 }
