@@ -55,14 +55,14 @@ namespace aspdotnet_react.models
             cmd.Connection = conn;
             cmd.CommandType = System.Data.CommandType.Text;
 
-            // [3] 테이블의 모든 자료를 삭제
+            // [3] 테이블의 모든 자료 삭제
             //cmd.CommandText = $"delete from tb_todo_item";
             //cmd.ExecuteNonQuery();
 
             cmd.CommandText = $"truncate table tb_todo_item"; // delete 구문보다 빠르긴 하지만 복구가 불가능 : id 에 대하여 초기화 안 됨
             cmd.ExecuteNonQuery();
 
-            // [3] SQL 생성 및 실행
+            // [4] SQL 생성 및 실행
             for (int i = 0; i < 2500; i++)
             {
                 if (i % 5 == 0)
@@ -76,6 +76,47 @@ namespace aspdotnet_react.models
                 cmd.ExecuteNonQuery();
             }
 
+        }
+
+        // 목록
+        public List<TodoItem> AllTodoList()
+        {
+            // [0] TodoItem을 저장할 목록 객체 생성
+            List<TodoItem> list = new List<TodoItem>();
+
+            // [1] Command 객체 생성
+            OracleCommand cmd = new OracleCommand();
+
+            // [2] Connection 객체 연결
+            cmd.Connection = conn;
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            // [3] SQL 생성 및 실행
+            cmd.CommandText = $"select id, title, completed from tb_todo_item";
+            OracleDataReader dataReader = cmd.ExecuteReader(); // 데이터 읽기 위함
+
+            // [4] 자료를 읽어 객체화해서 목록 객체에 추가
+            while(dataReader.Read())
+            {
+                // [5] TodoItem 객체 생성
+                TodoItem todoItem = new TodoItem();
+
+                // [6] TodoItem 객체의 속성에 값 설정
+                todoItem.id = dataReader.GetInt32(0);
+                todoItem.title = dataReader.GetString(1);
+                //todoItem.completed = dataReader.GetChar(2); // GetChar()은 지원 안 함
+                todoItem.completed = dataReader.GetString(2)[0];
+
+                // [7] 리턴할 목록 객체에 TodoItem 객체 추가
+                list.Add(todoItem);
+            }
+
+            // [8] DB 작업한 것 정리
+            dataReader.Close();
+            cmd.Dispose();
+
+            // [9] 목록 객체 리턴
+            return list;
         }
     }
 }

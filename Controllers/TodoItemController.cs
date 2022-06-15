@@ -21,5 +21,16 @@ namespace aspdotnet_react.Controllers
 
             return new JsonResult("{stateResult: success}");
         }
+
+
+        [HttpGet]
+        [Route("AllTodoList")] // 테스트 할 때 TodoItem/AllTodoList를 치면 나오게 함
+                               // 테스트 하는 것은 브라우저 또는 postman을 사용하면 됨
+        public List<TodoItem> AllTodoList()
+        {
+            TodoItemRepository todoItemRepository = new TodoItemRepository();
+            return todoItemRepository.AllTodoList();
+        }
+
     }
 }
