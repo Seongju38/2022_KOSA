@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using aspdotnet_react.models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,10 @@ namespace aspdotnet_react.Controllers
                                    // 테스트 하는 것은 브라우저 또는 postman을 사용하면 됨
         public JsonResult createBulkTodos()
         {
-            return new JsonResult("{stateResult: 'success'}");
+            TodoItemRepository todoItemRepository = new TodoItemRepository();
+            todoItemRepository.createBulkTodos(); // 데이터 넣기
+
+            return new JsonResult("{stateResult: success}");
         }
     }
 }

@@ -55,16 +55,23 @@ namespace aspdotnet_react.models
             cmd.Connection = conn;
             cmd.CommandType = System.Data.CommandType.Text;
 
+            // [3] 테이블의 모든 자료를 삭제
+            //cmd.CommandText = $"delete from tb_todo_item";
+            //cmd.ExecuteNonQuery();
+
+            cmd.CommandText = $"truncate table tb_todo_item"; // delete 구문보다 빠르긴 하지만 복구가 불가능 : id 에 대하여 초기화 안 됨
+            cmd.ExecuteNonQuery();
+
             // [3] SQL 생성 및 실행
             for (int i = 0; i < 2500; i++)
             {
                 if (i % 5 == 0)
                 {
-                    cmd.CommandText = $"insert into tb_todo_item (id, title, completed) values (SEQ_TODO_ITEM_ID.nextval, '리액트의 기초 ${i}', 'Y')";
+                    cmd.CommandText = $"insert into tb_todo_item (id, title, completed) values (SEQ_TODO_ITEM_ID.nextval, '리액트의 기초 {i}', 'Y')";
                 }
                 else
                 {
-                    cmd.CommandText = $"insert into tb_todo_item (id, title, completed) values (SEQ_TODO_ITEM_ID.nextval, '리액트의 기초 ${i}', 'N')";
+                    cmd.CommandText = $"insert into tb_todo_item (id, title, completed) values (SEQ_TODO_ITEM_ID.nextval, '리액트의 기초 {i}', 'N')";
                 }
                 cmd.ExecuteNonQuery();
             }
