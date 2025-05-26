@@ -42,3 +42,40 @@
 ├── AspdotnetReact/        # ASP.NET + React 실습
 └── README.md
 ```
+
+---
+
+## 🛠 merge-kosa.sh 사용
+
+저장소들을 하나의 저장소로 이력 포함 병합하기 위한 자동화 스크립트입니다.  
+**Git Bash 환경에서만 실행 가능합니다.**
+
+```bash
+# 1. Git Bash에서 저장소 디렉토리로 이동
+cd ~/Desktop/2022_KOSA
+
+# 2. 스크립트에 실행 권한 부여
+chmod +x merge-kosa.sh
+
+# 3. 스크립트 실행
+./merge-kosa.sh
+```
+
+⚠ 주의 사항
+
+- **Git Bash 환경에서 실행해야 합니다.**  
+  PowerShell이나 CMD에서는 `xargs`, `git mv` 등의 명령어가 작동하지 않습니다.
+
+- **로컬 저장소에 커밋이 하나도 없을 경우, `push` 명령이 실패할 수 있습니다.**  
+  아래 명령어로 최소 한 개의 커밋을 생성해 주세요.
+
+  ```bash
+  git add .
+  git commit -m "first commit"
+  ```
+
+- **현재 체크아웃된 브랜치 이름(main, master 등)을 감지하여 푸시합니다.**  
+  수동으로 브랜치를 지정할 필요는 없습니다.
+
+- **동일한 저장소를 여러 번 병합할 경우 충돌이 발생할 수 있습니다.**  
+  병합 전에는 해당 저장소가 이미 포함되어 있는지 반드시 확인하세요.
